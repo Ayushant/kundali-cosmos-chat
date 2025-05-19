@@ -73,7 +73,7 @@ const KundaliChatPage: React.FC = () => {
     <AppLayout>
       <div className="flex flex-col lg:flex-row gap-4 md:gap-6 relative min-h-[calc(100vh-80px)]">
         <div 
-          className={`${showSidebar ? 'lg:w-1/3 w-full' : 'lg:w-0 w-0'} 
+          className={`${showSidebar ? 'lg:w-1/4 w-full' : 'lg:w-0 w-0'} 
             transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm overflow-hidden`}
         >
           {showSidebar && <KundaliChart 
@@ -93,7 +93,7 @@ const KundaliChatPage: React.FC = () => {
           {showSidebar ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </Button>
         
-        <div className={`${showSidebar ? 'lg:w-2/3' : 'lg:w-full'} w-full transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm`}>
+        <div className={`${showSidebar ? 'lg:w-3/4' : 'lg:w-full'} w-full transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm`}>
           <ChatInterface isFullWidth={true} kundaliInsights={kundaliInsights || {}} />
         </div>
       </div>
