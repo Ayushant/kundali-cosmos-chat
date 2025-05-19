@@ -7,6 +7,7 @@ import ChatInterface from '@/components/chat/chat-interface';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { calculateKundali } from '@/utils/kundali-calculator';
+import { useToast } from '@/components/ui/use-toast';
 
 // Define the KundaliData interface to match what is returned from calculateKundali
 interface KundaliData {
@@ -31,22 +32,42 @@ const KundaliChatPage: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [kundaliInsights, setKundaliInsights] = useState<KundaliData | null>(null);
   const [isCalculating, setIsCalculating] = useState(true);
+  const { toast } = useToast();
 
   // Extract relevant data from the kundali chart for the chat
   useEffect(() => {
     if (birthDetails) {
       setIsCalculating(true);
       try {
-        // Calculate Kundali using the utility function
+        // Calculate Kundali using the updated utility function
         const kundaliData = calculateKundali(birthDetails);
         setKundaliInsights(kundaliData);
+        toast({
+          title: "Kundali Chart Generated",
+          description: "Your astrological chart has been calculated successfully.",
+          duration: 3000,
+        });
       } catch (error) {
         console.error('Error calculating Kundali data:', error);
+        toast({
+          title: "Calculation Error",
+          description: "There was an issue generating your kundali chart.",
+          variant: "destructive",
+          duration: 5000,
+        });
       } finally {
         setIsCalculating(false);
       }
+    } else {
+      // If no birth details provided, redirect or show message
+      toast({
+        title: "Missing Information",
+        description: "Birth details are required to generate your Kundali chart.",
+        variant: "destructive",
+        duration: 5000,
+      });
     }
-  }, [birthDetails]);
+  }, [birthDetails, toast]);
 
   return (
     <AppLayout>

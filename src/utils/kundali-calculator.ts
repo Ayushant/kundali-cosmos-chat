@@ -25,6 +25,13 @@ interface KundaliData {
   weakHouses: number[];
 }
 
+// Zodiac signs in order
+const zodiacSigns = [
+  "Aries", "Taurus", "Gemini", "Cancer",
+  "Leo", "Virgo", "Libra", "Scorpio",
+  "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+];
+
 // Helper function to determine zodiac sign based on date
 function getZodiacSign(date: Date): string {
   const day = date.getDate();
@@ -44,133 +51,130 @@ function getZodiacSign(date: Date): string {
   return "Pisces";
 }
 
-// Helper function to get nakshatra based on zodiac sign
-function getNakshatra(sign: string): string {
-  const nakshatraMap: Record<string, string[]> = {
-    "Aries": ["Ashwini", "Bharani", "Krittika"],
-    "Taurus": ["Rohini", "Mrigashira", "Ardra"],
-    "Gemini": ["Punarvasu", "Pushya", "Ashlesha"],
-    "Cancer": ["Magha", "Purva Phalguni", "Uttara Phalguni"],
-    "Leo": ["Hasta", "Chitra", "Swati"],
-    "Virgo": ["Vishakha", "Anuradha", "Jyeshtha"],
-    "Libra": ["Mula", "Purva Ashadha", "Uttara Ashadha"],
-    "Scorpio": ["Shravana", "Dhanishta", "Shatabhisha"],
-    "Sagittarius": ["Purva Bhadrapada", "Uttara Bhadrapada", "Revati"],
-    "Capricorn": ["Ashwini", "Bharani", "Krittika"],
-    "Aquarius": ["Rohini", "Mrigashira", "Ardra"],
-    "Pisces": ["Punarvasu", "Pushya", "Ashlesha"]
-  };
+// Helper function to get nakshatra based on zodiac sign and degree
+function getNakshatra(sign: string, degree = 0): string {
+  // Map of nakshatras across the zodiac (simplified)
+  const nakshatras = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+    "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+    "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
+    "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+  ];
 
-  // Get a consistent nakshatra based on the sign
-  const nakshatras = nakshatraMap[sign] || ["Rohini"];
-  // Use a deterministic approach to select a nakshatra
-  const index = sign.length % nakshatras.length;
-  return nakshatras[index];
+  // Calculate nakshatra based on sign and degree (simplified algorithm)
+  const signIndex = zodiacSigns.indexOf(sign);
+  const totalDegrees = signIndex * 30 + degree;
+  const nakshatraIndex = Math.floor((totalDegrees * 27) / 360) % 27;
+  
+  return nakshatras[nakshatraIndex];
 }
 
 // Generate ascendant based on birth time
 function getAscendant(dateObj: Date, timeString: string): string {
   const [hours, minutes] = timeString.split(':').map(Number);
-  const hourIndex = hours % 12;
   
-  // Map hours to zodiac signs (rough approximation)
-  const ascendantSigns = [
-    "Aries", "Taurus", "Gemini", "Cancer",
-    "Leo", "Virgo", "Libra", "Scorpio",
-    "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-  ];
+  // This is a simplified algorithm for demonstration
+  // In a real system, this would need precise calculations based on time and location
+  const hourIndex = (hours + Math.floor(minutes / 15) / 4) % 24;
+  const signIndex = Math.floor(hourIndex / 2) % 12;
   
-  return `${ascendantSigns[hourIndex]}`;
+  return zodiacSigns[signIndex];
 }
 
-// Generate planets and their positions
-function generatePlanetPositions(birthDate: Date): PlanetPosition[] {
+// Calculate planetary positions using a deterministic algorithm
+function calculatePlanetaryPositions(birthDate: Date, birthTime: string, latitude?: number, longitude?: number): PlanetPosition[] {
   const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
-  const zodiacSigns = [
-    "Aries", "Taurus", "Gemini", "Cancer",
-    "Leo", "Virgo", "Libra", "Scorpio",
-    "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-  ];
   
-  // Seed the RNG with the birth date for consistent results
-  const seed = birthDate.getFullYear() * 10000 + 
-               (birthDate.getMonth() + 1) * 100 + 
-               birthDate.getDate();
+  // Use the birth date components to seed our calculations
+  const day = birthDate.getDate();
+  const month = birthDate.getMonth() + 1;
+  const year = birthDate.getFullYear();
   
-  // Simple custom pseudo-random number generator
-  const customRandom = (min: number, max: number) => {
-    const x = Math.sin(seed * planets.length) * 10000;
-    const rand = x - Math.floor(x);
-    return Math.floor(rand * (max - min + 1)) + min;
-  };
+  // Parse birth time
+  const [hours, minutes] = birthTime.split(':').map(Number);
+  
+  // Use the sum to create a unique but deterministic basis for calculations
+  const timeValue = hours + (minutes / 60);
+  const baseValue = day + month * 30 + (year % 100) + timeValue;
   
   return planets.map((planet, index) => {
-    // Deterministically assign zodiac sign based on planet and birth date
-    const signIndex = (seed + index) % zodiacSigns.length;
+    // Calculate a deterministic but seemingly random sign index
+    const factor = (baseValue * (index + 1)) % 17;
+    const signIndex = Math.floor(factor) % 12;
     const sign = zodiacSigns[signIndex];
     
-    // Assign house (1-12)
-    const house = 1 + ((signIndex + customRandom(0, 3)) % 12);
+    // Calculate the house based on the sign and ascendant
+    const ascendantIndex = zodiacSigns.indexOf(getAscendant(birthDate, birthTime));
+    const house = ((signIndex - ascendantIndex) + 12) % 12 + 1;
     
-    // Calculate degree (0-29)
-    const degree = (birthDate.getDate() + index) % 30;
+    // Calculate degree
+    const degree = Math.floor((factor % 1) * 30);
     
     return {
       name: planet,
-      sign: sign,
-      house: house,
-      degree: degree,
-      nakshatra: getNakshatra(sign)
+      sign,
+      house,
+      degree,
+      nakshatra: getNakshatra(sign, degree)
     };
   });
 }
 
-// Determine current dasha based on birth date
-function getCurrentDasha(birthDate: Date): string {
+// Calculate the current dasha
+function calculateCurrentDasha(birthDate: Date): string {
   const dashaLords = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"];
   const dashaDurations = [7, 20, 6, 10, 7, 18, 16, 19, 17]; // Years
   
-  const currentYear = new Date().getFullYear();
   const birthYear = birthDate.getFullYear();
+  const currentYear = new Date().getFullYear();
   const yearsPassed = currentYear - birthYear;
   
-  // Determine which dasha we're in
-  let totalYears = 0;
+  let accumulatedYears = 0;
   let lordIndex = 0;
   
-  // Find current dasha lord based on years passed
+  // Find which dasha we're currently in
   for (let i = 0; i < dashaLords.length; i++) {
-    if (totalYears + dashaDurations[i] > yearsPassed) {
+    if (accumulatedYears + dashaDurations[i] > yearsPassed) {
       lordIndex = i;
       break;
     }
-    totalYears += dashaDurations[i];
+    accumulatedYears += dashaDurations[i];
   }
   
-  // Calculate end year of current dasha
-  const endYear = birthYear + totalYears + dashaDurations[lordIndex];
-  const startYear = endYear - dashaDurations[lordIndex];
+  const startYear = birthYear + accumulatedYears;
+  const endYear = startYear + dashaDurations[lordIndex];
   
   return `${dashaLords[lordIndex]} Mahadasha (${startYear}-${endYear})`;
 }
 
-// Determine strong and weak houses based on birthdate
-function getHouseStrengths(birthDate: Date): {strongHouses: number[], weakHouses: number[]} {
-  // Use birth date to deterministically generate strong and weak houses
+// Calculate strong and weak houses
+function calculateHouseStrengths(birthDate: Date, birthTime: string): { strongHouses: number[], weakHouses: number[] } {
+  // In real astrology, this would be based on complex calculations
+  // This is simplified for demonstration
+  
   const day = birthDate.getDate();
   const month = birthDate.getMonth() + 1;
+  const [hours] = birthTime.split(':').map(Number);
   
-  // Generate strong houses (typically houses 1, 5, 9, 10 are considered good in astrology)
-  const strongBase = [1, 5, 9, 10];
-  const strongHouses = strongBase.map(house => ((house + day % 3) - 1) % 12 + 1);
+  // Generate some pseudo-random but deterministic strong and weak houses
+  const base = (day + month + hours) % 12;
   
-  // Generate weak houses (typically houses 6, 8, 12 are considered challenging in astrology)
-  const weakBase = [6, 8, 12];
-  const weakHouses = weakBase.map(house => ((house + month % 3) - 1) % 12 + 1);
+  const strongHouses = [
+    (base % 12) + 1,
+    ((base + 4) % 12) + 1,
+    ((base + 8) % 12) + 1
+  ];
+  
+  const weakHouses = [
+    ((base + 2) % 12) + 1,
+    ((base + 6) % 12) + 1,
+    ((base + 10) % 12) + 1
+  ];
   
   return {
-    strongHouses: strongHouses.filter(h => !weakHouses.includes(h)),
-    weakHouses: weakHouses
+    strongHouses,
+    weakHouses
   };
 }
 
@@ -181,19 +185,27 @@ export const calculateKundali = (birthDetails: BirthDetails): KundaliData => {
     }
 
     const dateObj = birthDetails.date;
+    const timeStr = birthDetails.time;
+    
+    // Calculate basic chart elements
     const sunSign = getZodiacSign(dateObj);
-    const moonSign = getZodiacSign(new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + 2));
-    const ascendant = getAscendant(dateObj, birthDetails.time);
-    const planets = generatePlanetPositions(dateObj);
-    const currentDasha = getCurrentDasha(dateObj);
-    const houses = getHouseStrengths(dateObj);
-
+    const moonSign = getZodiacSign(new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + 2)); // Simplified moon calculation
+    const ascendant = getAscendant(dateObj, timeStr);
+    
+    // Calculate planets and houses
+    const planets = calculatePlanetaryPositions(dateObj, timeStr, birthDetails.latitude, birthDetails.longitude);
+    const currentDasha = calculateCurrentDasha(dateObj);
+    const houses = calculateHouseStrengths(dateObj, timeStr);
+    
+    // Format for display
+    const ascendantDegree = Math.floor(Math.random() * 30);
+    
     return {
-      ascendant: `${ascendant} - ${Math.floor(Math.random() * 30)}°`,
+      ascendant: `${ascendant} - ${ascendantDegree}°`,
       moonSign: `${moonSign} - ${getNakshatra(moonSign)} Nakshatra`,
       sunSign: `${sunSign} - ${getNakshatra(sunSign)} Nakshatra`,
-      currentDasha: currentDasha,
-      planets: planets,
+      currentDasha,
+      planets,
       strongHouses: houses.strongHouses,
       weakHouses: houses.weakHouses
     };
@@ -206,18 +218,18 @@ export const calculateKundali = (birthDetails: BirthDetails): KundaliData => {
       moonSign: "Taurus - Rohini Nakshatra",
       sunSign: "Gemini - Mrigashira Nakshatra",
       currentDasha: "Jupiter Mahadasha (2020-2036)",
-      strongHouses: [1, 5, 9, 10],
+      strongHouses: [1, 5, 9],
       weakHouses: [6, 8, 12],
       planets: [
-        { name: "Sun", sign: "Gemini", house: 11 },
-        { name: "Moon", sign: "Taurus", house: 10 },
-        { name: "Mars", sign: "Aries", house: 9 },
-        { name: "Mercury", sign: "Gemini", house: 11 },
-        { name: "Jupiter", sign: "Pisces", house: 8 },
-        { name: "Venus", sign: "Taurus", house: 10 },
-        { name: "Saturn", sign: "Capricorn", house: 6 },
-        { name: "Rahu", sign: "Gemini", house: 11 },
-        { name: "Ketu", sign: "Sagittarius", house: 5 }
+        { name: "Sun", sign: "Gemini", house: 11, degree: 15, nakshatra: "Ardra" },
+        { name: "Moon", sign: "Taurus", house: 10, degree: 8, nakshatra: "Rohini" },
+        { name: "Mars", sign: "Aries", house: 9, degree: 22, nakshatra: "Bharani" },
+        { name: "Mercury", sign: "Gemini", house: 11, degree: 5, nakshatra: "Mrigashira" },
+        { name: "Jupiter", sign: "Pisces", house: 8, degree: 17, nakshatra: "Revati" },
+        { name: "Venus", sign: "Taurus", house: 10, degree: 27, nakshatra: "Mrigashira" },
+        { name: "Saturn", sign: "Capricorn", house: 6, degree: 12, nakshatra: "Shravana" },
+        { name: "Rahu", sign: "Gemini", house: 11, degree: 3, nakshatra: "Mrigashira" },
+        { name: "Ketu", sign: "Sagittarius", house: 5, degree: 3, nakshatra: "Mula" }
       ]
     };
   }
