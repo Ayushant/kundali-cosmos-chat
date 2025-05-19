@@ -60,7 +60,7 @@ const LoginForm: React.FC = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password" className="text-white">Password</Label>
-              <a href="#" className="text-sm text-astro-gold hover:underline">
+              <a href="#" className="text-sm text-yellow-400 hover:underline">
                 Forgot password?
               </a>
             </div>
@@ -77,7 +77,7 @@ const LoginForm: React.FC = () => {
           
           <Button 
             type="submit" 
-            className="w-full bg-gradient-to-r from-astro-gold to-astro-orange hover:opacity-90 transition-opacity"
+            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-400 hover:opacity-90 transition-opacity text-black font-medium"
             disabled={isLoading}
           >
             {isLoading ? 'Logging in...' : 'Login'}
@@ -88,7 +88,7 @@ const LoginForm: React.FC = () => {
       <div className="mt-6 text-center text-white">
         <p>
           Don't have an account?{' '}
-          <a href="#" className="text-astro-gold hover:underline">
+          <a href="#" className="text-yellow-400 hover:underline">
             Sign up
           </a>
         </p>

@@ -53,17 +53,17 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// Astrology theme colors
+				// Astrology theme colors - updated to red and yellow
 				astro: {
 					purple: {
-						light: '#9b87f5',
-						DEFAULT: '#7E69AB',
-						dark: '#6E59A5'
+						light: '#ff8080',
+						DEFAULT: '#ea384c',
+						dark: '#c41c30'
 					},
-					gold: '#F5BD41',
-					orange: '#F97316',
-					indigo: '#312E81',
-					midnight: '#1A1F2C',
+					gold: '#FFD700',
+					orange: '#FFC72C',
+					indigo: '#8B0000',
+					midnight: '#660000',
 				},
 			},
 			fontFamily: {
@@ -105,8 +105,8 @@ export default {
 				'spin-slow': 'spin-slow 20s linear infinite',
 			},
 			backgroundImage: {
-				'cosmos-gradient': 'linear-gradient(to bottom right, #1A1F2C, #312E81)',
-				'gold-gradient': 'linear-gradient(135deg, #F5BD41 0%, #F97316 100%)',
+				'cosmos-gradient': 'linear-gradient(to bottom right, #ea384c, #8B0000)',
+				'gold-gradient': 'linear-gradient(135deg, #FFD700 0%, #FFC72C 100%)',
 			}
 		}
 	},

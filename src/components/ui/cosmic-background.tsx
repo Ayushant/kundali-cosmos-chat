@@ -47,7 +47,8 @@ export const CosmicBackground: React.FC = () => {
       const twinkle = 
         Math.sin((time + star.twinkleDelay) * star.twinkleSpeed) * 0.5 + 0.5;
       
-      ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity * twinkle})`;
+      // Using yellow stars for our new theme
+      ctx.fillStyle = `rgba(255, 215, 0, ${star.opacity * twinkle})`;
       ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
       ctx.fill();
     });

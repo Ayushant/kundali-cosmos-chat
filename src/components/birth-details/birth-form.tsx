@@ -67,7 +67,7 @@ const BirthForm: React.FC = () => {
   return (
     <div className="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto">
       <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-astro-purple-dark mb-2">Birth Details</h1>
+        <h1 className="text-3xl font-bold text-red-600 mb-2">Birth Details</h1>
         <p className="text-gray-600">Enter your birth information to generate your Kundali</p>
       </div>
       
@@ -89,13 +89,12 @@ const BirthForm: React.FC = () => {
                 {birthDetails.date ? format(birthDetails.date, "PPP") : <span>Select date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 z-50" align="start">
               <Calendar
                 mode="single"
                 selected={birthDetails.date}
                 onSelect={(date) => setBirthDetails({ ...birthDetails, date })}
                 initialFocus
-                className="p-3 pointer-events-auto"
               />
             </PopoverContent>
           </Popover>
@@ -136,7 +135,7 @@ const BirthForm: React.FC = () => {
         
         <Button 
           type="submit" 
-          className="w-full bg-gradient-to-r from-astro-purple to-astro-purple-dark hover:opacity-90 transition-opacity text-white"
+          className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:opacity-90 transition-opacity text-white"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Generating Kundali...' : 'Generate My Kundali'}
