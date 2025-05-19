@@ -34,6 +34,27 @@ const KundaliChatPage: React.FC = () => {
   const [isCalculating, setIsCalculating] = useState(true);
   const { toast } = useToast();
 
+  // Mobile responsive state
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  // Add resize listener for mobile responsiveness
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile && showSidebar) {
+        setShowSidebar(false);
+      } else if (!mobile && !showSidebar) {
+        setShowSidebar(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, [showSidebar]);
+
   // Extract relevant data from the kundali chart for the chat
   useEffect(() => {
     if (birthDetails) {
@@ -72,8 +93,25 @@ const KundaliChatPage: React.FC = () => {
   return (
     <AppLayout>
       <div className="flex flex-col lg:flex-row gap-4 md:gap-6 relative min-h-[calc(100vh-80px)]">
+        {/* Mobile Chart Toggle Button (only shown on mobile) */}
+        <div className="lg:hidden flex justify-center my-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowSidebar(!showSidebar)}
+            className="border-orange-300 text-orange-600 hover:bg-orange-50 w-full max-w-xs"
+            aria-label={showSidebar ? "Hide chart" : "Show chart"}
+          >
+            {showSidebar ? (
+              <><ChevronLeft size={16} className="mr-1" /> Hide Kundali Chart</>
+            ) : (
+              <><ChevronRight size={16} className="mr-1" /> Show Kundali Chart</>
+            )}
+          </Button>
+        </div>
+        
+        {/* Kundali Chart Sidebar */}
         <div 
-          className={`${showSidebar ? 'lg:w-1/4 w-full' : 'lg:w-0 w-0'} 
+          className={`${showSidebar ? 'max-h-[500px] lg:max-h-none lg:w-1/4 w-full' : 'max-h-0 lg:w-0 w-0 overflow-hidden'} 
             transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm overflow-hidden`}
         >
           {showSidebar && <KundaliChart 
@@ -83,6 +121,7 @@ const KundaliChatPage: React.FC = () => {
           />}
         </div>
         
+        {/* Desktop Sidebar Toggle */}
         <Button 
           variant="outline" 
           size="icon"
@@ -93,8 +132,9 @@ const KundaliChatPage: React.FC = () => {
           {showSidebar ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </Button>
         
+        {/* Chat Interface */}
         <div className={`${showSidebar ? 'lg:w-3/4' : 'lg:w-full'} w-full transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm`}>
-          <ChatInterface isFullWidth={true} kundaliInsights={kundaliInsights || {}} />
+          <ChatInterface isFullWidth={!showSidebar} kundaliInsights={kundaliInsights || {}} />
         </div>
       </div>
     </AppLayout>

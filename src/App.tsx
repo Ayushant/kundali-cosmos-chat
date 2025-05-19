@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 import BirthDetailsPage from "./pages/BirthDetailsPage";
 import KundaliChatPage from "./pages/KundaliChatPage";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
                 <Route path="/birth-details" element={<BirthDetailsPage />} />
                 <Route path="/kundali-chat" element={<KundaliChatPage />} />
                 <Route path="*" element={<NotFound />} />
