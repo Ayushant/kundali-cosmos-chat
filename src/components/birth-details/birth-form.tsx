@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -95,6 +94,9 @@ const BirthForm: React.FC = () => {
                 selected={birthDetails.date}
                 onSelect={(date) => setBirthDetails({ ...birthDetails, date })}
                 initialFocus
+                captionLayout="dropdown-buttons"
+                fromYear={1900}
+                toYear={2100}
               />
             </PopoverContent>
           </Popover>
