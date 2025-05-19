@@ -2,15 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { CalendarIcon, Clock, MapPin } from 'lucide-react';
 
@@ -29,7 +25,6 @@ const BirthForm: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -75,35 +70,24 @@ const BirthForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="birth-date" className="text-gray-700">Date of Birth</Label>
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                id="birth-date"
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !birthDetails.date && "text-muted-foreground",
-                  errors.date && "border-red-500"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {birthDetails.date ? format(birthDetails.date, "PPP") : <span>Select date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 z-50 bg-white" align="start">
-              <Calendar
-                mode="single"
-                selected={birthDetails.date}
-                onSelect={(date) => {
-                  setBirthDetails({ ...birthDetails, date });
-                  setCalendarOpen(false);
-                }}
-                initialFocus
-                disabled={(date) => date > new Date()}
-                className="rounded-md border shadow-md"
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="relative">
+            <DatePicker
+              selected={birthDetails.date}
+              onChange={(date) => setBirthDetails({ ...birthDetails, date: date as Date })}
+              dateFormat="MMMM d, yyyy"
+              maxDate={new Date()}
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              className={cn(
+                "w-full rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                errors.date && "border-red-500"
+              )}
+              placeholderText="Select date"
+              id="birth-date"
+            />
+            <CalendarIcon className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
+          </div>
           {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
         </div>
         
