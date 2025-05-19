@@ -15,6 +15,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           {children}
         </div>
       </main>
+      <footer className="py-3 px-4 text-center text-sm text-orange-700/60 bg-orange-50 border-t border-orange-100">
+        <p>© 2025 Kundali Cosmos | Vedic Astrology Insights</p>
+      </footer>
     </div>
   );
 };
