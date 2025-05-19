@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -28,6 +29,7 @@ const BirthForm: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -73,7 +75,7 @@ const BirthForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="birth-date" className="text-gray-700">Date of Birth</Label>
-          <Popover>
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
             <PopoverTrigger asChild>
               <Button
                 id="birth-date"
@@ -88,15 +90,17 @@ const BirthForm: React.FC = () => {
                 {birthDetails.date ? format(birthDetails.date, "PPP") : <span>Select date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 z-50" align="start">
+            <PopoverContent className="w-auto p-0 z-50 bg-white" align="start">
               <Calendar
                 mode="single"
                 selected={birthDetails.date}
-                onSelect={(date) => setBirthDetails({ ...birthDetails, date })}
+                onSelect={(date) => {
+                  setBirthDetails({ ...birthDetails, date });
+                  setCalendarOpen(false);
+                }}
                 initialFocus
-                captionLayout="dropdown-buttons"
-                fromYear={1900}
-                toYear={2100}
+                disabled={(date) => date > new Date()}
+                className="rounded-md border shadow-md"
               />
             </PopoverContent>
           </Popover>
@@ -111,7 +115,7 @@ const BirthForm: React.FC = () => {
               type="time"
               value={birthDetails.time}
               onChange={(e) => setBirthDetails({ ...birthDetails, time: e.target.value })}
-              className={cn(errors.time && "border-red-500")}
+              className={cn(errors.time && "border-red-500", "pr-10")}
               placeholder="HH:MM"
             />
             <Clock className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -127,7 +131,7 @@ const BirthForm: React.FC = () => {
               type="text"
               value={birthDetails.place}
               onChange={(e) => setBirthDetails({ ...birthDetails, place: e.target.value })}
-              className={cn(errors.place && "border-red-500")}
+              className={cn(errors.place && "border-red-500", "pr-10")}
               placeholder="City, Country"
             />
             <MapPin className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
