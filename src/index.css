@@ -53,10 +53,6 @@
     background-image: linear-gradient(to bottom right, #ea384c, #8B0000);
   }
   
-  .star {
-    @apply absolute bg-white rounded-full pointer-events-none;
-  }
-
   .chat-bubble {
     @apply rounded-2xl p-4 max-w-[80%];
   }
@@ -70,15 +66,15 @@
   }
 
   .kundali-chart {
-    @apply border-2 border-yellow-500 bg-white/10 backdrop-blur-sm rounded-lg p-4;
+    @apply border-2 border-yellow-500 bg-white backdrop-blur-sm rounded-lg p-4;
   }
   
   .input-astro {
-    @apply bg-white/10 border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 backdrop-blur-sm;
+    @apply bg-white border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600;
   }
 }
 
-/* Cosmic background stars */
+/* Cosmic background without stars */
 .stars-container {
   position: fixed;
   top: 0;
