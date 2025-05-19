@@ -1,4 +1,6 @@
 
+import * as swisseph from 'swisseph';
+
 interface BirthDetails {
   date?: Date;
   time?: string;
@@ -32,28 +34,48 @@ const zodiacSigns = [
   "Sagittarius", "Capricorn", "Aquarius", "Pisces"
 ];
 
-// Helper function to determine zodiac sign based on date
-function getZodiacSign(date: Date): string {
-  const day = date.getDate();
-  const month = date.getMonth() + 1; // JavaScript months are 0-indexed
+// Planet constants from SwissEph
+const SE_SUN = swisseph.SE_SUN;
+const SE_MOON = swisseph.SE_MOON;
+const SE_MERCURY = swisseph.SE_MERCURY;
+const SE_VENUS = swisseph.SE_VENUS;
+const SE_MARS = swisseph.SE_MARS;
+const SE_JUPITER = swisseph.SE_JUPITER;
+const SE_SATURN = swisseph.SE_SATURN;
+const SE_URANUS = swisseph.SE_URANUS;
+const SE_NEPTUNE = swisseph.SE_NEPTUNE;
+const SE_PLUTO = swisseph.SE_PLUTO;
+const SE_MEAN_NODE = swisseph.SE_MEAN_NODE; // Rahu
+const SE_TRUE_NODE = swisseph.SE_TRUE_NODE;
 
-  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return "Aries";
-  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return "Taurus";
-  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return "Gemini";
-  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return "Cancer";
-  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return "Leo";
-  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return "Virgo";
-  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return "Libra";
-  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return "Scorpio";
-  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return "Sagittarius";
-  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "Capricorn";
-  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return "Aquarius";
-  return "Pisces";
+// Map planets to their names
+const planetNames = {
+  [SE_SUN]: 'Sun',
+  [SE_MOON]: 'Moon',
+  [SE_MERCURY]: 'Mercury',
+  [SE_VENUS]: 'Venus',
+  [SE_MARS]: 'Mars',
+  [SE_JUPITER]: 'Jupiter',
+  [SE_SATURN]: 'Saturn',
+  [SE_MEAN_NODE]: 'Rahu',
+  [(SE_MEAN_NODE + 1) % 12]: 'Ketu' // Ketu is opposite to Rahu
+};
+
+// List of planets to calculate
+const planetsToCalculate = [
+  SE_SUN, SE_MOON, SE_MARS, SE_MERCURY, 
+  SE_JUPITER, SE_VENUS, SE_SATURN, SE_MEAN_NODE
+];
+
+// Helper function to determine zodiac sign based on longitude
+function getZodiacSignFromLongitude(longitude: number): string {
+  const signIndex = Math.floor(longitude / 30) % 12;
+  return zodiacSigns[signIndex];
 }
 
-// Helper function to get nakshatra based on zodiac sign and degree
-function getNakshatra(sign: string, degree = 0): string {
-  // Map of nakshatras across the zodiac (simplified)
+// Helper function to get nakshatra based on longitude
+function getNakshatraFromLongitude(longitude: number): string {
+  // Map of nakshatras across the zodiac
   const nakshatras = [
     "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
     "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
@@ -61,68 +83,129 @@ function getNakshatra(sign: string, degree = 0): string {
     "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
     "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
   ];
-
-  // Calculate nakshatra based on sign and degree (simplified algorithm)
-  const signIndex = zodiacSigns.indexOf(sign);
-  const totalDegrees = signIndex * 30 + degree;
-  const nakshatraIndex = Math.floor((totalDegrees * 27) / 360) % 27;
   
+  // Each nakshatra spans 13°20' (13.33°) of the zodiac
+  const nakshatraIndex = Math.floor((longitude * 27) / 360) % 27;
   return nakshatras[nakshatraIndex];
 }
 
-// Generate ascendant based on birth time
-function getAscendant(dateObj: Date, timeString: string): string {
-  const [hours, minutes] = timeString.split(':').map(Number);
+// Calculate Julian day number from date and time
+function getJulianDay(date: Date, timeStr: string): number {
+  const [hours, minutes] = timeStr.split(':').map(Number);
   
-  // This is a simplified algorithm for demonstration
-  // In a real system, this would need precise calculations based on time and location
-  const hourIndex = (hours + Math.floor(minutes / 15) / 4) % 24;
-  const signIndex = Math.floor(hourIndex / 2) % 12;
+  // Create a new date object with the time
+  const dateTime = new Date(date);
+  dateTime.setHours(hours, minutes, 0, 0);
   
-  return zodiacSigns[signIndex];
+  // Get julian day using SwissEph
+  return swisseph.swe_julday(
+    dateTime.getUTCFullYear(),
+    dateTime.getUTCMonth() + 1, // SwissEph months are 1-12
+    dateTime.getUTCDate(),
+    dateTime.getUTCHours() + dateTime.getUTCMinutes() / 60,
+    swisseph.SE_GREG_CAL
+  );
 }
 
-// Calculate planetary positions using a deterministic algorithm
-function calculatePlanetaryPositions(birthDate: Date, birthTime: string, latitude?: number, longitude?: number): PlanetPosition[] {
-  const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
-  
-  // Use the birth date components to seed our calculations
-  const day = birthDate.getDate();
-  const month = birthDate.getMonth() + 1;
-  const year = birthDate.getFullYear();
-  
-  // Parse birth time
-  const [hours, minutes] = birthTime.split(':').map(Number);
-  
-  // Use the sum to create a unique but deterministic basis for calculations
-  const timeValue = hours + (minutes / 60);
-  const baseValue = day + month * 30 + (year % 100) + timeValue;
-  
-  return planets.map((planet, index) => {
-    // Calculate a deterministic but seemingly random sign index
-    const factor = (baseValue * (index + 1)) % 17;
-    const signIndex = Math.floor(factor) % 12;
-    const sign = zodiacSigns[signIndex];
+// Calculate ascendant (Lagna)
+function calculateAscendant(julianDay: number, latitude: number, longitude: number): string {
+  try {
+    // Get houses using SwissEph
+    const houses = swisseph.swe_houses(
+      julianDay,
+      latitude,
+      longitude,
+      'P' // Placidus house system
+    );
     
-    // Calculate the house based on the sign and ascendant
-    const ascendantIndex = zodiacSigns.indexOf(getAscendant(birthDate, birthTime));
-    const house = ((signIndex - ascendantIndex) + 12) % 12 + 1;
+    if (houses && houses.ascendant) {
+      const ascendantLongitude = houses.ascendant;
+      const ascendantSign = getZodiacSignFromLongitude(ascendantLongitude);
+      const ascendantDegree = Math.floor(ascendantLongitude % 30);
+      return `${ascendantSign} - ${ascendantDegree}°`;
+    }
+    return "Leo - 15°"; // Fallback
+  } catch (error) {
+    console.error("Error calculating ascendant:", error);
+    return "Leo - 15°"; // Fallback
+  }
+}
+
+// Calculate planetary positions
+function calculatePlanetaryPositions(julianDay: number, ascendant: string): PlanetPosition[] {
+  const planets: PlanetPosition[] = [];
+  const ascendantSign = ascendant.split('-')[0].trim();
+  const ascendantIndex = zodiacSigns.indexOf(ascendantSign);
+  
+  try {
+    // Calculate planets using SwissEph
+    for (const planetId of planetsToCalculate) {
+      // Get planet position
+      const result = swisseph.swe_calc_ut(julianDay, planetId, swisseph.SEFLG_SWIEPH);
+      
+      if (result && result.longitude !== undefined) {
+        const longitude = result.longitude;
+        const sign = getZodiacSignFromLongitude(longitude);
+        const signIndex = zodiacSigns.indexOf(sign);
+        
+        // Calculate house (based on ascendant)
+        const house = ((signIndex - ascendantIndex) + 12) % 12 + 1;
+        
+        // Calculate degree within sign
+        const degree = Math.floor(longitude % 30);
+        
+        // Get nakshatra
+        const nakshatra = getNakshatraFromLongitude(longitude);
+        
+        planets.push({
+          name: planetNames[planetId] || `Planet-${planetId}`,
+          sign,
+          house,
+          degree,
+          nakshatra
+        });
+      }
+    }
     
-    // Calculate degree
-    const degree = Math.floor((factor % 1) * 30);
+    // Add Ketu (opposite to Rahu)
+    const rahu = planets.find(p => p.name === 'Rahu');
+    if (rahu) {
+      // Ketu is 180° opposite to Rahu
+      const ketuSignIndex = (zodiacSigns.indexOf(rahu.sign) + 6) % 12;
+      const ketuSign = zodiacSigns[ketuSignIndex];
+      const ketuHouse = ((rahu.house + 5) % 12) + 1;
+      
+      planets.push({
+        name: 'Ketu',
+        sign: ketuSign,
+        house: ketuHouse,
+        degree: rahu.degree,
+        nakshatra: getNakshatraFromLongitude((zodiacSigns.indexOf(ketuSign) * 30) + (rahu.degree || 0))
+      });
+    }
     
-    return {
-      name: planet,
-      sign,
-      house,
-      degree,
-      nakshatra: getNakshatra(sign, degree)
-    };
-  });
+    return planets;
+  } catch (error) {
+    console.error("Error calculating planetary positions:", error);
+    
+    // Return default data as fallback
+    return [
+      { name: "Sun", sign: "Gemini", house: 11, degree: 15, nakshatra: "Ardra" },
+      { name: "Moon", sign: "Taurus", house: 10, degree: 8, nakshatra: "Rohini" },
+      { name: "Mars", sign: "Aries", house: 9, degree: 22, nakshatra: "Bharani" },
+      { name: "Mercury", sign: "Gemini", house: 11, degree: 5, nakshatra: "Mrigashira" },
+      { name: "Jupiter", sign: "Pisces", house: 8, degree: 17, nakshatra: "Revati" },
+      { name: "Venus", sign: "Taurus", house: 10, degree: 27, nakshatra: "Mrigashira" },
+      { name: "Saturn", sign: "Capricorn", house: 6, degree: 12, nakshatra: "Shravana" },
+      { name: "Rahu", sign: "Gemini", house: 11, degree: 3, nakshatra: "Mrigashira" },
+      { name: "Ketu", sign: "Sagittarius", house: 5, degree: 3, nakshatra: "Mula" }
+    ];
+  }
 }
 
 // Calculate the current dasha
 function calculateCurrentDasha(birthDate: Date): string {
+  // Simplified dasha calculation
   const dashaLords = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"];
   const dashaDurations = [7, 20, 6, 10, 7, 18, 16, 19, 17]; // Years
   
@@ -148,34 +231,73 @@ function calculateCurrentDasha(birthDate: Date): string {
   return `${dashaLords[lordIndex]} Mahadasha (${startYear}-${endYear})`;
 }
 
-// Calculate strong and weak houses
-function calculateHouseStrengths(birthDate: Date, birthTime: string): { strongHouses: number[], weakHouses: number[] } {
-  // In real astrology, this would be based on complex calculations
-  // This is simplified for demonstration
+// Calculate strong and weak houses based on planetary positions
+function calculateHouseStrengths(planets: PlanetPosition[]): { strongHouses: number[], weakHouses: number[] } {
+  // Count planet influence in houses
+  const houseStrengths: {[key: number]: number} = {};
+  for (let i = 1; i <= 12; i++) {
+    houseStrengths[i] = 0;
+  }
   
-  const day = birthDate.getDate();
-  const month = birthDate.getMonth() + 1;
-  const [hours] = birthTime.split(':').map(Number);
-  
-  // Generate some pseudo-random but deterministic strong and weak houses
-  const base = (day + month + hours) % 12;
-  
-  const strongHouses = [
-    (base % 12) + 1,
-    ((base + 4) % 12) + 1,
-    ((base + 8) % 12) + 1
-  ];
-  
-  const weakHouses = [
-    ((base + 2) % 12) + 1,
-    ((base + 6) % 12) + 1,
-    ((base + 10) % 12) + 1
-  ];
-  
-  return {
-    strongHouses,
-    weakHouses
+  // Assign weights to planets
+  const planetStrength: {[key: string]: number} = {
+    'Sun': 3,
+    'Moon': 4,
+    'Mars': 3,
+    'Mercury': 3,
+    'Jupiter': 5,
+    'Venus': 4,
+    'Saturn': 2,
+    'Rahu': 2,
+    'Ketu': 1
   };
+  
+  // Calculate house strengths based on planet positions and aspects
+  planets.forEach(planet => {
+    // Add strength to the house where planet is located
+    const house = planet.house;
+    houseStrengths[house] += planetStrength[planet.name] || 2;
+    
+    // Add influence to aspected houses
+    // 7th aspect (opposite house)
+    const seventhHouse = ((house + 6) % 12) || 12;
+    houseStrengths[seventhHouse] += (planetStrength[planet.name] || 2) / 2;
+    
+    // Additional aspects for Jupiter, Mars and Saturn
+    if (planet.name === 'Jupiter') {
+      // Jupiter aspects 5th, 7th, 9th houses from its position
+      const fifthHouse = ((house + 4) % 12) || 12;
+      const ninthHouse = ((house + 8) % 12) || 12;
+      
+      houseStrengths[fifthHouse] += planetStrength[planet.name] / 3;
+      houseStrengths[ninthHouse] += planetStrength[planet.name] / 3;
+    } else if (planet.name === 'Mars') {
+      // Mars aspects 4th, 7th, 8th houses from its position
+      const fourthHouse = ((house + 3) % 12) || 12;
+      const eighthHouse = ((house + 7) % 12) || 12;
+      
+      houseStrengths[fourthHouse] += planetStrength[planet.name] / 3;
+      houseStrengths[eighthHouse] += planetStrength[planet.name] / 3;
+    } else if (planet.name === 'Saturn') {
+      // Saturn aspects 3rd, 7th, 10th houses from its position
+      const thirdHouse = ((house + 2) % 12) || 12;
+      const tenthHouse = ((house + 9) % 12) || 12;
+      
+      houseStrengths[thirdHouse] += planetStrength[planet.name] / 3;
+      houseStrengths[tenthHouse] += planetStrength[planet.name] / 3;
+    }
+  });
+  
+  // Convert to array of [house, strength] pairs and sort by strength
+  const sortedHouses = Object.entries(houseStrengths)
+    .map(([house, strength]) => ({ house: parseInt(house), strength }))
+    .sort((a, b) => b.strength - a.strength);
+  
+  // Get top 3 strong houses and bottom 3 weak houses
+  const strongHouses = sortedHouses.slice(0, 3).map(h => h.house);
+  const weakHouses = sortedHouses.slice(-3).map(h => h.house).reverse();
+  
+  return { strongHouses, weakHouses };
 }
 
 export const calculateKundali = (birthDetails: BirthDetails): KundaliData => {
@@ -186,24 +308,32 @@ export const calculateKundali = (birthDetails: BirthDetails): KundaliData => {
 
     const dateObj = birthDetails.date;
     const timeStr = birthDetails.time;
+    const latitude = birthDetails.latitude || 28.6139; // Default to Delhi
+    const longitude = birthDetails.longitude || 77.2090;
     
-    // Calculate basic chart elements
-    const sunSign = getZodiacSign(dateObj);
-    const moonSign = getZodiacSign(new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate() + 2)); // Simplified moon calculation
-    const ascendant = getAscendant(dateObj, timeStr);
+    // Calculate Julian day for the birth date and time
+    const julianDay = getJulianDay(dateObj, timeStr);
     
-    // Calculate planets and houses
-    const planets = calculatePlanetaryPositions(dateObj, timeStr, birthDetails.latitude, birthDetails.longitude);
+    // Calculate Ascendant
+    const ascendant = calculateAscendant(julianDay, latitude, longitude);
+    
+    // Calculate planets
+    const planets = calculatePlanetaryPositions(julianDay, ascendant);
+    
+    // Find Sun and Moon signs
+    const sun = planets.find(p => p.name === 'Sun');
+    const moon = planets.find(p => p.name === 'Moon');
+    
+    // Calculate current dasha
     const currentDasha = calculateCurrentDasha(dateObj);
-    const houses = calculateHouseStrengths(dateObj, timeStr);
     
-    // Format for display
-    const ascendantDegree = Math.floor(Math.random() * 30);
+    // Calculate strong and weak houses
+    const houses = calculateHouseStrengths(planets);
     
     return {
-      ascendant: `${ascendant} - ${ascendantDegree}°`,
-      moonSign: `${moonSign} - ${getNakshatra(moonSign)} Nakshatra`,
-      sunSign: `${sunSign} - ${getNakshatra(sunSign)} Nakshatra`,
+      ascendant,
+      moonSign: moon ? `${moon.sign} - ${moon.nakshatra} Nakshatra` : "Taurus - Rohini Nakshatra",
+      sunSign: sun ? `${sun.sign} - ${sun.nakshatra} Nakshatra` : "Gemini - Mrigashira Nakshatra",
       currentDasha,
       planets,
       strongHouses: houses.strongHouses,

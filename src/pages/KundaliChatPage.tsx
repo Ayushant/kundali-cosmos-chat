@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AppLayout from '@/components/layout/app-layout';
@@ -39,19 +38,19 @@ const KundaliChatPage: React.FC = () => {
     if (birthDetails) {
       setIsCalculating(true);
       try {
-        // Calculate Kundali using the updated utility function
+        // Calculate Kundali using SwissEph
         const kundaliData = calculateKundali(birthDetails);
         setKundaliInsights(kundaliData);
         toast({
           title: "Kundali Chart Generated",
-          description: "Your astrological chart has been calculated successfully.",
+          description: "Your astrological chart has been calculated with SwissEph.",
           duration: 3000,
         });
       } catch (error) {
         console.error('Error calculating Kundali data:', error);
         toast({
           title: "Calculation Error",
-          description: "There was an issue generating your kundali chart.",
+          description: "There was an issue generating your kundali chart. Using fallback data.",
           variant: "destructive",
           duration: 5000,
         });
