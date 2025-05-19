@@ -14,13 +14,13 @@ export const SiteHeader: React.FC = () => {
   };
 
   return (
-    <header className="w-full py-3 px-4 flex justify-between items-center bg-gradient-to-r from-orange-100 to-orange-50 shadow-sm">
+    <header className="w-full py-3 px-4 flex justify-between items-center bg-gradient-to-r from-red-100 to-red-50 shadow-sm">
       <div className="flex items-center">
-        <h1 className="text-xl md:text-2xl font-bold text-orange-600">Kundali Cosmos</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-red-600">Kundali Cosmos</h1>
       </div>
       <Button 
         variant="ghost" 
-        className="flex items-center gap-1 hover:bg-orange-200 text-orange-600"
+        className="flex items-center gap-1 hover:bg-red-200 text-red-600"
         onClick={handleLogout}
       >
         <LogOut size={18} />

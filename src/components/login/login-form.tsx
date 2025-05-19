@@ -77,7 +77,7 @@ const LoginForm: React.FC = () => {
           
           <Button 
             type="submit" 
-            className="w-full bg-gradient-to-r from-yellow-500 to-yellow-400 hover:opacity-90 transition-opacity text-black font-medium"
+            className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:opacity-90 transition-opacity text-white font-medium"
             disabled={isLoading}
           >
             {isLoading ? 'Logging in...' : 'Login'}
@@ -88,7 +88,7 @@ const LoginForm: React.FC = () => {
       <div className="mt-6 text-center text-white">
         <p>
           Don't have an account?{' '}
-          <a href="#" className="text-yellow-400 hover:underline">
+          <a href="#" className="text-red-400 hover:underline">
             Sign up
           </a>
         </p>
