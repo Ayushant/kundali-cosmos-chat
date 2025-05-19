@@ -12,7 +12,7 @@ const KundaliChatPage: React.FC = () => {
   return (
     <AppLayout>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <div className="lg:col-span-1 bg-white p-4 rounded-lg shadow-sm">
+        <div className="lg:col-span-1 bg-white rounded-lg shadow-sm">
           <KundaliChart birthDetails={birthDetails} />
         </div>
         <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm">

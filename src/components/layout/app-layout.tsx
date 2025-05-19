@@ -8,7 +8,7 @@ interface AppLayoutProps {
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-red-100 to-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-orange-50 to-white">
       <SiteHeader />
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-4 md:py-6">
