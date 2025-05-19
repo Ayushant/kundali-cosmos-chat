@@ -60,7 +60,7 @@ const LoginForm: React.FC = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password" className="text-white">Password</Label>
-              <a href="#" className="text-sm text-yellow-400 hover:underline">
+              <a href="#" className="text-yellow-400 hover:underline">
                 Forgot password?
               </a>
             </div>
