@@ -6,32 +6,28 @@ import KundaliChart from '@/components/kundali/kundali-chart';
 import ChatInterface from '@/components/chat/chat-interface';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { calculateKundali } from '@/utils/kundali-calculator';
 
 const KundaliChatPage: React.FC = () => {
   const location = useLocation();
   const birthDetails = location.state?.birthDetails;
   const [showSidebar, setShowSidebar] = useState(true);
   const [kundaliInsights, setKundaliInsights] = useState<Record<string, any>>({});
+  const [isCalculating, setIsCalculating] = useState(true);
 
   // Extract relevant data from the kundali chart for the chat
   useEffect(() => {
     if (birthDetails) {
-      // Format data for the chat engine to use
-      setKundaliInsights({
-        ascendant: "Leo",
-        moonSign: "Taurus - Rohini Nakshatra",
-        sunSign: "Gemini - Mrigashira Nakshatra",
-        currentDasha: "Jupiter Mahadasha (2020-2036)",
-        strongHouses: [1, 5, 9, 10],
-        weakHouses: [6, 8, 12],
-        planets: [
-          { name: "Sun", sign: "Gemini", house: 11 },
-          { name: "Moon", sign: "Taurus", house: 10 },
-          { name: "Mars", sign: "Aries", house: 9 },
-          { name: "Mercury", sign: "Gemini", house: 11 },
-          { name: "Jupiter", sign: "Pisces", house: 8 }
-        ]
-      });
+      setIsCalculating(true);
+      try {
+        // Calculate Kundali using the utility function
+        const kundaliData = calculateKundali(birthDetails);
+        setKundaliInsights(kundaliData);
+      } catch (error) {
+        console.error('Error calculating Kundali data:', error);
+      } finally {
+        setIsCalculating(false);
+      }
     }
   }, [birthDetails]);
 
@@ -42,7 +38,7 @@ const KundaliChatPage: React.FC = () => {
           className={`${showSidebar ? 'lg:w-1/3 w-full' : 'lg:w-0 w-0'} 
             transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm overflow-hidden`}
         >
-          {showSidebar && <KundaliChart birthDetails={birthDetails} />}
+          {showSidebar && <KundaliChart birthDetails={birthDetails} kundaliData={kundaliInsights} isLoading={isCalculating} />}
         </div>
         
         <Button 

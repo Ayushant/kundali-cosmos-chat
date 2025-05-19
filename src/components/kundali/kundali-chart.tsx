@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock, MapPin, Loader2 } from 'lucide-react';
 
 interface KundaliChartProps {
   birthDetails?: {
@@ -8,37 +8,34 @@ interface KundaliChartProps {
     time?: string;
     place?: string;
   };
+  kundaliData?: {
+    ascendant: string;
+    moonSign: string;
+    sunSign: string;
+    currentDasha: string;
+    planets: Array<{
+      name: string;
+      sign: string;
+      house: number;
+      degree?: number;
+      nakshatra?: string;
+    }>;
+    strongHouses: number[];
+    weakHouses: number[];
+  };
+  isLoading?: boolean;
 }
 
-const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
-  // Traditional Vedic astrology houses arrangement (clockwise)
-  const houses = [
-    { number: 1, name: "Lagna", signification: "Self, personality" },
-    { number: 2, name: "Dhana", signification: "Wealth, family" },
-    { number: 3, name: "Parakrama", signification: "Courage, siblings" },
-    { number: 4, name: "Sukha", signification: "Home, mother" },
-    { number: 5, name: "Putra", signification: "Children, intellect" },
-    { number: 6, name: "Ari", signification: "Enemies, illness" },
-    { number: 7, name: "Yuvati", signification: "Spouse, partnerships" },
-    { number: 8, name: "Ayur", signification: "Longevity, obstacles" },
-    { number: 9, name: "Dharma", signification: "Fortune, faith" },
-    { number: 10, name: "Karma", signification: "Career, father" },
-    { number: 11, name: "Labha", signification: "Gains, aspirations" },
-    { number: 12, name: "Vyaya", signification: "Losses, spirituality" }
-  ];
-
-  // Planets with their traditional significations
-  const planets = [
-    { name: "Sun", position: "Leo", signification: "Soul, authority" },
-    { name: "Moon", position: "Cancer", signification: "Mind, emotions" },
-    { name: "Mars", position: "Aries", signification: "Energy, courage" },
-    { name: "Mercury", position: "Gemini", signification: "Communication, intellect" },
-    { name: "Jupiter", position: "Sagittarius", signification: "Wisdom, fortune" },
-    { name: "Venus", position: "Libra", signification: "Love, harmony" },
-    { name: "Saturn", position: "Capricorn", signification: "Discipline, karma" },
-    { name: "Rahu", position: "Variable", signification: "Material desires" },
-    { name: "Ketu", position: "Variable", signification: "Spirituality, liberation" }
-  ];
+const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, isLoading = false }) => {
+  if (isLoading) {
+    return (
+      <div className="bg-gradient-to-br from-orange-50 to-white backdrop-blur-sm rounded-xl shadow-lg p-8 flex flex-col items-center justify-center min-h-[500px]">
+        <Loader2 size={40} className="text-orange-500 animate-spin mb-4" />
+        <h3 className="text-xl font-semibold text-orange-600">Calculating Your Kundali</h3>
+        <p className="text-sm text-gray-500 mt-2">Processing birth details...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-br from-orange-50 to-white backdrop-blur-sm rounded-xl shadow-lg p-4">
@@ -82,17 +79,23 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
             <div className="absolute top-0 left-0 w-full h-full border-t-2 border-r-2 border-orange-300"></div>
           </div>
           
-          {/* House labels - positioned according to North Indian style */}
+          {/* House labels and planet placements */}
           <div className="absolute inset-0">
             {/* Top row */}
             <div className="absolute top-1 left-1/4 transform -translate-x-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">12</p>
+                {kundaliData?.planets.filter(p => p.house === 12).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             <div className="absolute top-1 left-3/4 transform -translate-x-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">11</p>
+                {kundaliData?.planets.filter(p => p.house === 11).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             
@@ -100,11 +103,17 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
             <div className="absolute bottom-1 left-1/4 transform -translate-x-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">6</p>
+                {kundaliData?.planets.filter(p => p.house === 6).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             <div className="absolute bottom-1 left-3/4 transform -translate-x-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">5</p>
+                {kundaliData?.planets.filter(p => p.house === 5).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             
@@ -112,11 +121,17 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
             <div className="absolute top-1/4 left-1 transform -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">1</p>
+                {kundaliData?.planets.filter(p => p.house === 1).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             <div className="absolute top-3/4 left-1 transform -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">7</p>
+                {kundaliData?.planets.filter(p => p.house === 7).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             
@@ -124,11 +139,17 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
             <div className="absolute top-1/4 right-1 transform -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">10</p>
+                {kundaliData?.planets.filter(p => p.house === 10).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             <div className="absolute top-3/4 right-1 transform -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">4</p>
+                {kundaliData?.planets.filter(p => p.house === 4).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             
@@ -136,21 +157,33 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
             <div className="absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">2</p>
+                {kundaliData?.planets.filter(p => p.house === 2).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             <div className="absolute top-1/4 left-3/4 transform -translate-x-1/2 -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">9</p>
+                {kundaliData?.planets.filter(p => p.house === 9).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             <div className="absolute top-3/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">8</p>
+                {kundaliData?.planets.filter(p => p.house === 8).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
             <div className="absolute top-3/4 left-3/4 transform -translate-x-1/2 -translate-y-1/2 p-1">
               <div className="bg-orange-100/80 p-1 rounded text-center">
                 <p className="text-xs font-semibold">3</p>
+                {kundaliData?.planets.filter(p => p.house === 3).map((planet, i) => (
+                  <span key={i} className="text-[10px] block">{planet.name}</span>
+                ))}
               </div>
             </div>
           </div>
@@ -168,29 +201,45 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
         <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-3 rounded-lg">
           <h4 className="font-semibold text-orange-800">Current Dasha</h4>
           <div className="flex flex-col gap-1 mt-1">
-            <span>Jupiter Mahadasha</span>
-            <span className="text-xs text-orange-700">2020 - 2036</span>
+            <span>{kundaliData?.currentDasha.split("(")[0]}</span>
+            <span className="text-xs text-orange-700">
+              {kundaliData?.currentDasha.includes("(") ? 
+                `(${kundaliData.currentDasha.split("(")[1]}` : 
+                "(2020-2036)"}
+            </span>
           </div>
         </div>
         <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-3 rounded-lg">
           <h4 className="font-semibold text-orange-800">Ascendant</h4>
           <div className="flex flex-col gap-1 mt-1">
-            <span>Leo - 23° 15'</span>
-            <span className="text-xs text-orange-700">Ruled by Sun</span>
+            <span>{kundaliData?.ascendant}</span>
+            <span className="text-xs text-orange-700">Ruled by {
+              kundaliData?.ascendant.includes("Leo") ? "Sun" : 
+              kundaliData?.ascendant.includes("Cancer") ? "Moon" :
+              kundaliData?.ascendant.includes("Aries") ? "Mars" : "Venus"
+            }</span>
           </div>
         </div>
         <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-3 rounded-lg">
           <h4 className="font-semibold text-orange-800">Moon Sign</h4>
           <div className="flex flex-col gap-1 mt-1">
-            <span>Taurus - 18° 42'</span>
-            <span className="text-xs text-orange-700">Rohini Nakshatra</span>
+            <span>{kundaliData?.moonSign.split("-")[0]}</span>
+            <span className="text-xs text-orange-700">{
+              kundaliData?.moonSign.includes("-") ? 
+                kundaliData.moonSign.split("-")[1].trim() : 
+                "Rohini Nakshatra"
+            }</span>
           </div>
         </div>
         <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-3 rounded-lg">
           <h4 className="font-semibold text-orange-800">Sun Sign</h4>
           <div className="flex flex-col gap-1 mt-1">
-            <span>Gemini - 05° 22'</span>
-            <span className="text-xs text-orange-700">Mrigashira Nakshatra</span>
+            <span>{kundaliData?.sunSign.split("-")[0]}</span>
+            <span className="text-xs text-orange-700">{
+              kundaliData?.sunSign.includes("-") ? 
+                kundaliData.sunSign.split("-")[1].trim() : 
+                "Mrigashira Nakshatra"
+            }</span>
           </div>
         </div>
       </div>
@@ -203,34 +252,22 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails }) => {
               <th className="px-2 py-1 text-left text-orange-800">Planet</th>
               <th className="px-2 py-1 text-left text-orange-800">Sign</th>
               <th className="px-2 py-1 text-left text-orange-800">House</th>
+              {kundaliData?.planets.some(p => p.degree !== undefined) && (
+                <th className="px-2 py-1 text-left text-orange-800">Degree</th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-orange-100">
-            <tr>
-              <td className="px-2 py-1">Sun</td>
-              <td className="px-2 py-1">Gemini</td>
-              <td className="px-2 py-1">11</td>
-            </tr>
-            <tr>
-              <td className="px-2 py-1">Moon</td>
-              <td className="px-2 py-1">Taurus</td>
-              <td className="px-2 py-1">10</td>
-            </tr>
-            <tr>
-              <td className="px-2 py-1">Mars</td>
-              <td className="px-2 py-1">Aries</td>
-              <td className="px-2 py-1">9</td>
-            </tr>
-            <tr>
-              <td className="px-2 py-1">Mercury</td>
-              <td className="px-2 py-1">Gemini</td>
-              <td className="px-2 py-1">11</td>
-            </tr>
-            <tr>
-              <td className="px-2 py-1">Jupiter</td>
-              <td className="px-2 py-1">Pisces</td>
-              <td className="px-2 py-1">8</td>
-            </tr>
+            {kundaliData?.planets.map((planet, index) => (
+              <tr key={index}>
+                <td className="px-2 py-1">{planet.name}</td>
+                <td className="px-2 py-1">{planet.sign}</td>
+                <td className="px-2 py-1">{planet.house}</td>
+                {kundaliData?.planets.some(p => p.degree !== undefined) && (
+                  <td className="px-2 py-1">{planet.degree ? `${planet.degree}°` : '-'}</td>
+                )}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
