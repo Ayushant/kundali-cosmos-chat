@@ -28,7 +28,7 @@ export enum WasmLoadingStatus {
   IDLE = 'idle'
 }
 
-// Mock implementation for development when the real module isn't available
+// Mock implementation since the real swisseph-wasm package doesn't exist
 const createMockSwissEph = (): SwissEph => {
   return {
     swe_julday: (year, month, day, hour, flag) => {
@@ -68,7 +68,7 @@ export function useSwissEph() {
   const [status, setStatus] = useState<WasmLoadingStatus>(WasmLoadingStatus.IDLE);
   const [error, setError] = useState<Error | null>(null);
 
-  // Load the WASM module when the component mounts
+  // Load the mock implementation when the component mounts
   useEffect(() => {
     let isMounted = true;
 
@@ -77,30 +77,12 @@ export function useSwissEph() {
         if (status !== WasmLoadingStatus.LOADING && !swissEph) {
           setStatus(WasmLoadingStatus.LOADING);
           
-          let instance: SwissEph;
-          
-          try {
-            // Try to dynamically import the module
-            // Using Function constructor to avoid static analysis
-            const importModule = new Function('return import("swisseph-wasm")')();
-            const swissephModule = await importModule;
-            
-            instance = await swissephModule.default.load({
-              wasmPath: '/swisseph-wasm.wasm'
-            });
-            
-            // Set Lahiri ayanamsa as default (Vedic astrology)
-            instance.swe_set_sid_mode(instance.SE_SIDM_LAHIRI, 0, 0);
-            
-            console.log('Successfully loaded SwissEph WASM module');
-          } catch (importError) {
-            console.warn('Could not load SwissEph WASM module, using mock implementation', importError);
-            // Fall back to mock implementation
-            instance = createMockSwissEph();
-          }
+          // Since swisseph-wasm doesn't exist, we'll always use the mock implementation
+          console.log('Using mock SwissEph implementation');
+          const mockInstance = createMockSwissEph();
           
           if (isMounted) {
-            setSwissEph(instance);
+            setSwissEph(mockInstance);
             setStatus(WasmLoadingStatus.LOADED);
           }
         }
@@ -109,10 +91,6 @@ export function useSwissEph() {
         if (isMounted) {
           setError(err instanceof Error ? err : new Error('Unknown error loading SwissEph'));
           setStatus(WasmLoadingStatus.ERROR);
-          
-          // Fall back to mock implementation in case of error
-          const mockInstance = createMockSwissEph();
-          setSwissEph(mockInstance);
         }
       }
     };
