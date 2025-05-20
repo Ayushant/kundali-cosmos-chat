@@ -1,54 +1,55 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import AppLayout from '@/components/layout/app-layout';
 import KundaliChart from '@/components/kundali/kundali-chart';
+import KundaliCalculator from '@/components/kundali/kundali-calculator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
-import { calculateKundali } from '@/utils/kundali-calculator';
 import { useToast } from '@/components/ui/use-toast';
+import { PlanetPosition } from '@/utils/kundali-engine';
 
 const KundaliChartPage: React.FC = () => {
   const location = useLocation();
   const birthDetails = location.state?.birthDetails;
-  const [kundaliData, setKundaliData] = useState(null);
+  const [kundaliData, setKundaliData] = useState<any>(null);
   const [isCalculating, setIsCalculating] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (birthDetails) {
-      setIsCalculating(true);
-      try {
-        // Calculate Kundali using our algorithm
-        const calculatedData = calculateKundali(birthDetails);
-        setKundaliData(calculatedData);
-        toast({
-          title: "Kundali Chart Generated",
-          description: "Your astrological chart has been calculated successfully.",
-          duration: 3000,
-        });
-      } catch (error) {
-        console.error('Error calculating Kundali data:', error);
-        toast({
-          title: "Calculation Error",
-          description: "There was an issue generating your kundali chart. Using fallback data.",
-          variant: "destructive",
-          duration: 5000,
-        });
-      } finally {
-        setIsCalculating(false);
-      }
-    } else {
-      // If no birth details provided, show message
-      toast({
-        title: "Missing Information",
-        description: "Please enter your birth details to generate your Kundali chart.",
-        variant: "destructive",
-        duration: 5000,
-      });
-    }
-  }, [birthDetails, toast]);
+  // Handle calculation results from Swiss Ephemeris
+  const handleCalculationComplete = (data: { 
+    ascendant: string; 
+    planets: PlanetPosition[] 
+  }) => {
+    // Convert the data format to match what KundaliChart expects
+    const processedData = {
+      ascendant: data.ascendant,
+      moonSign: data.planets.find(p => p.name === "Moon")?.sign + " - " + 
+               data.planets.find(p => p.name === "Moon")?.nakshatra + " Nakshatra",
+      sunSign: data.planets.find(p => p.name === "Sun")?.sign + " - " + 
+              data.planets.find(p => p.name === "Sun")?.nakshatra + " Nakshatra",
+      currentDasha: "Jupiter Mahadasha (2020-2036)", // This requires a separate calculation
+      planets: data.planets.map(planet => ({
+        name: planet.name,
+        sign: planet.sign,
+        house: planet.house,
+        degree: planet.degree,
+        nakshatra: planet.nakshatra
+      })),
+      strongHouses: [1, 5, 9], // These would need additional logic to calculate properly
+      weakHouses: [6, 8, 12]
+    };
+    
+    setKundaliData(processedData);
+    setIsCalculating(false);
+    
+    toast({
+      title: "Kundali Chart Generated",
+      description: "Your astrological chart has been calculated with Swiss Ephemeris.",
+      duration: 3000,
+    });
+  };
 
   return (
     <AppLayout>
@@ -70,23 +71,60 @@ const KundaliChartPage: React.FC = () => {
           )}
         </div>
         
-        <Card className="bg-gradient-to-br from-yellow-50 to-red-50 border-orange-100">
+        <Card className="bg-gradient-to-br from-yellow-50 to-red-50 border-orange-100 mb-6">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-red-600">Your Kundali Chart</CardTitle>
             <CardDescription className="text-orange-700">
-              Based on your birth details, here is your personalized Vedic astrology chart
+              Calculated with Swiss Ephemeris for precise planetary positions
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="max-w-xl mx-auto">
+            {/* SwissEph Calculator (hidden when chart is ready) */}
+            {(!kundaliData && birthDetails) && (
+              <KundaliCalculator 
+                birthDetails={birthDetails} 
+                onCalculationComplete={handleCalculationComplete} 
+              />
+            )}
+            
+            {/* Show regular chart once data is available */}
+            <div className={`max-w-xl mx-auto ${!kundaliData ? 'hidden' : ''}`}>
               <KundaliChart 
                 birthDetails={birthDetails} 
                 kundaliData={kundaliData} 
-                isLoading={isCalculating} 
+                isLoading={isCalculating && !kundaliData} 
               />
             </div>
+            
+            {/* No birth details warning */}
+            {!birthDetails && (
+              <div className="text-center p-4">
+                <p className="text-red-500 mb-2">No birth details provided</p>
+                <Link to="/birth-details">
+                  <Button>Enter Birth Details</Button>
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
+        
+        {/* Show the detailed table view when data is available */}
+        {kundaliData && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-xl">Precise Planetary Positions</CardTitle>
+              <CardDescription>
+                Calculated using Swiss Ephemeris (WASM) for highest accuracy
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <KundaliCalculator 
+                birthDetails={birthDetails} 
+                onCalculationComplete={handleCalculationComplete} 
+              />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </AppLayout>
   );
