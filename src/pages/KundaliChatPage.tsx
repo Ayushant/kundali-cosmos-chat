@@ -29,7 +29,7 @@ interface KundaliData {
 const KundaliChatPage: React.FC = () => {
   const location = useLocation();
   const birthDetails = location.state?.birthDetails;
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(true); // Set to true by default
   const [kundaliInsights, setKundaliInsights] = useState<KundaliData | null>(null);
   const [isCalculating, setIsCalculating] = useState(true);
   const { toast } = useToast();
@@ -42,9 +42,8 @@ const KundaliChatPage: React.FC = () => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      if (mobile && showSidebar) {
-        setShowSidebar(false);
-      } else if (!mobile && !showSidebar) {
+      // Don't auto-hide on mobile now - we want the chart to be visible by default
+      if (!mobile && !showSidebar) {
         setShowSidebar(true);
       }
     };
@@ -111,7 +110,7 @@ const KundaliChatPage: React.FC = () => {
         
         {/* Kundali Chart Sidebar */}
         <div 
-          className={`${showSidebar ? 'max-h-[500px] lg:max-h-none lg:w-1/4 w-full' : 'max-h-0 lg:w-0 w-0 overflow-hidden'} 
+          className={`${showSidebar ? 'max-h-[500px] lg:max-h-none lg:w-1/3 w-full' : 'max-h-0 lg:w-0 w-0 overflow-hidden'} 
             transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm overflow-hidden`}
         >
           {showSidebar && <KundaliChart 
@@ -133,7 +132,7 @@ const KundaliChatPage: React.FC = () => {
         </Button>
         
         {/* Chat Interface */}
-        <div className={`${showSidebar ? 'lg:w-3/4' : 'lg:w-full'} w-full transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm`}>
+        <div className={`${showSidebar ? 'lg:w-2/3' : 'lg:w-full'} w-full transition-all duration-300 ease-in-out bg-white rounded-lg shadow-sm`}>
           <ChatInterface isFullWidth={!showSidebar} kundaliInsights={kundaliInsights || {}} />
         </div>
       </div>
@@ -142,3 +141,4 @@ const KundaliChatPage: React.FC = () => {
 };
 
 export default KundaliChatPage;
+

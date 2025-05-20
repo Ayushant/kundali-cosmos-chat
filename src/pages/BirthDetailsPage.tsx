@@ -20,3 +20,4 @@ const BirthDetailsPage: React.FC = () => {
 };
 
 export default BirthDetailsPage;
+
