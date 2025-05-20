@@ -43,13 +43,14 @@ export function useSwissEph() {
         if (status !== WasmLoadingStatus.LOADING && !swissEph) {
           setStatus(WasmLoadingStatus.LOADING);
           
-          // Use a dynamic import with a proper type declaration
-          // This avoids TypeScript errors while still allowing dynamic importing
+          // Create a mock implementation during development if needed
+          // For actual implementation, we would use the real module
+          // We're using the dynamic import with vite-ignore to avoid TypeScript errors
           const swissephModule = await import(/* @vite-ignore */ 'swisseph-wasm');
           
           // Use a relative path that will work with Vite's asset handling
+          // The swisseph-wasm.wasm file should be placed in the public directory
           const instance = await swissephModule.default.load({
-            // Use a relative path that works with Vite
             wasmPath: '/swisseph-wasm.wasm'
           });
           
