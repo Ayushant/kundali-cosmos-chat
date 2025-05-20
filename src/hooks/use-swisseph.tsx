@@ -1,8 +1,24 @@
 
 import { useState, useEffect } from 'react';
-import type { SwissEph } from 'swisseph-wasm';
-// We need to import the module dynamically to avoid WASM import issues
-// This allows us to load the WASM module properly at runtime
+
+// Define the SwissEph type here to avoid direct imports
+// This type definition matches the structure of the swisseph-wasm module
+export interface SwissEph {
+  swe_julday: (year: number, month: number, day: number, hour: number, flag: number) => number;
+  swe_calc_ut: (julDay: number, planet: number, flag: number) => { longitude: number; latitude: number; distance: number };
+  swe_houses_ex: (julDay: number, flag: number, lat: number, lon: number, hsys: string) => { 
+    ascendant: number; 
+    mc: number; 
+    armc: number; 
+    vertex: number; 
+    equasc: number;
+    cusps: number[]; 
+  };
+  swe_set_sid_mode: (mode: number, t0: number, ayan_t0: number) => void;
+  SE_SIDM_LAHIRI: number;
+  SE_GREG_CAL: number;
+  SEFLG_SIDEREAL: number;
+}
 
 // Status enum for WASM loading states
 export enum WasmLoadingStatus {
