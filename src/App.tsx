@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import BirthDetailsPage from "./pages/BirthDetailsPage";
+import KundaliChartPage from "./pages/KundaliChartPage";
 import KundaliChatPage from "./pages/KundaliChatPage";
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +31,7 @@ const App: React.FC = () => {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/birth-details" element={<BirthDetailsPage />} />
+                <Route path="/kundali-chart" element={<KundaliChartPage />} />
                 <Route path="/kundali-chat" element={<KundaliChatPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

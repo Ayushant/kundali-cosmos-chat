@@ -55,7 +55,7 @@ const BirthForm: React.FC = () => {
       setTimeout(() => {
         setIsSubmitting(false);
         // Navigate to the kundali page with birth details
-        navigate('/kundali-chat', { state: { birthDetails } });
+        navigate('/kundali-chart', { state: { birthDetails } });
       }, 1500);
     }
   };
