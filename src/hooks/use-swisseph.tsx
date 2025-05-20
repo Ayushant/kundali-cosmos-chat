@@ -1,9 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { load as loadSwissEph } from 'swisseph-wasm';
-
-// SwissEph instance type definition
-type SwissEph = Awaited<ReturnType<typeof loadSwissEph>>;
+import type { SwissEph } from 'swisseph-wasm';
+// We need to import the module dynamically to avoid WASM import issues
+// This allows us to load the WASM module properly at runtime
 
 // Status enum for WASM loading states
 export enum WasmLoadingStatus {
@@ -28,12 +27,13 @@ export function useSwissEph() {
         if (status !== WasmLoadingStatus.LOADING && !swissEph) {
           setStatus(WasmLoadingStatus.LOADING);
           
+          // Dynamically import the module
+          const swissephModule = await import('swisseph-wasm');
+          
           // Use a relative path that will work with Vite's asset handling
-          const instance = await loadSwissEph({
+          const instance = await swissephModule.load({
             // Use a relative path that works with Vite
-            wasmPath: '/swisseph-wasm.wasm',
-            // Default ephemeris path if you add .se1 files later
-            // ephemerisPath: '/ephemeris'
+            wasmPath: '/swisseph-wasm.wasm'
           });
           
           // Set Lahiri ayanamsa as default (Vedic astrology)
