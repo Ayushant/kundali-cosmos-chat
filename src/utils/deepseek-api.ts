@@ -91,4 +91,3 @@ HOUSE STRENGTHS:
 
 Provide insights based on this chart when answering queries about career, relationships, health, finances, and spiritual growth. Be specific to their chart but explain concepts in simple terms. If they ask about remedies or future predictions, focus on general guidance rather than specific time-bound predictions. Respond in the language the user is using.`;
 };
-

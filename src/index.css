@@ -76,45 +76,45 @@
   }
 }
 
-/* Chat bubble styles */
+/* Chat bubble styles - improved for better readability and contrast */
 .chat-bubble {
-  @apply p-3 rounded-lg max-w-[85%] mb-2 whitespace-pre-wrap overflow-hidden;
+  @apply p-4 rounded-lg max-w-[85%] mb-3 whitespace-pre-wrap overflow-hidden shadow-sm;
 }
 
 .chat-bubble-user {
-  @apply bg-orange-600 text-white ml-auto rounded-br-none;
+  @apply bg-astro-purple text-white ml-auto rounded-br-none;
 }
 
 .chat-bubble-ai {
-  @apply bg-gray-100 text-gray-800 mr-auto rounded-bl-none;
+  @apply bg-gray-100 text-gray-800 mr-auto rounded-bl-none border border-gray-200;
 }
 
-/* Cosmic pattern background */
+/* Cosmic pattern background with improved opacity */
 .cosmic-pattern {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px);
   background-size: 20px 20px;
-  @apply absolute inset-0 opacity-50;
+  @apply absolute inset-0 opacity-40;
 }
 
-/* Markdown styling for AI responses */
+/* Markdown styling for AI responses with improved readability */
 .markdown h1 {
-  @apply text-xl font-bold mb-2;
+  @apply text-xl font-bold mb-3 text-gray-900;
 }
 
 .markdown h2 {
-  @apply text-lg font-bold mb-2;
+  @apply text-lg font-bold mb-2 text-gray-900;
 }
 
 .markdown h3 {
-  @apply text-base font-bold mb-2;
+  @apply text-base font-bold mb-2 text-gray-900;
 }
 
 .markdown p {
-  @apply mb-2;
+  @apply mb-3;
 }
 
 .markdown ul, .markdown ol {
-  @apply pl-5 mb-2;
+  @apply pl-6 mb-3;
 }
 
 .markdown ul {
@@ -126,23 +126,23 @@
 }
 
 .markdown code {
-  @apply bg-gray-200 px-1 rounded text-sm;
+  @apply bg-gray-200 px-1.5 py-0.5 rounded text-sm font-mono;
 }
 
 .markdown pre {
-  @apply bg-gray-800 text-white p-3 rounded mb-2 overflow-x-auto;
+  @apply bg-gray-800 text-white p-4 rounded-md mb-3 overflow-x-auto;
 }
 
 .markdown a {
-  @apply text-blue-600 underline;
+  @apply text-astro-purple underline;
 }
 
 .markdown blockquote {
-  @apply border-l-4 border-gray-300 pl-3 italic;
+  @apply border-l-4 border-astro-purple/30 pl-4 italic bg-gray-50 py-1;
 }
 
 .markdown table {
-  @apply border-collapse w-full mb-2;
+  @apply border-collapse w-full mb-3;
 }
 
 .markdown th, .markdown td {
@@ -150,5 +150,15 @@
 }
 
 .markdown th {
-  @apply bg-gray-100;
+  @apply bg-gray-100 font-semibold;
+}
+
+/* Fix for popover z-index issues */
+[data-state="open"] {
+  @apply z-50;
+}
+
+/* Fix for dropdown menus */
+.dropdown-menu {
+  @apply bg-white shadow-lg rounded-lg border border-gray-200 z-50;
 }

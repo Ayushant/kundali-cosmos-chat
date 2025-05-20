@@ -9,6 +9,7 @@ const LoginPage: React.FC = () => {
     <>
       <Helmet>
         <title>Login | Kundali Cosmos</title>
+        <meta name="description" content="Login to your Kundali Cosmos account" />
       </Helmet>
       <AuthLayout>
         <LoginForm />
