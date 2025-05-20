@@ -13,4 +13,7 @@ try {
   console.log('WASM file copied successfully to', targetWasmPath);
 } catch (err) {
   console.error('Error copying WASM file:', err);
+  console.log('Please make sure swisseph-wasm package is installed.');
+  console.log('You can install it with: npm install swisseph-wasm');
+  console.log('The application will use a mock implementation until the actual WASM file is available.');
 }

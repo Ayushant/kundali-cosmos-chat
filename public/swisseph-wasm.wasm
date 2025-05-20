@@ -1,3 +1,3 @@
 
-// This is just a placeholder. You need to run the copy-wasm-files.js script with Node.js
-// to copy the actual WASM file from the node_modules directory
+// This is just a placeholder file to avoid 404 errors during development
+// In production, you'd replace this with the actual WASM file from the swisseph-wasm package
