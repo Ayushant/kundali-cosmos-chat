@@ -28,10 +28,10 @@ export function useSwissEph() {
         if (status !== WasmLoadingStatus.LOADING && !swissEph) {
           setStatus(WasmLoadingStatus.LOADING);
           
-          // Use the correct path to the WASM file in node_modules
+          // Use a relative path that will work with Vite's asset handling
           const instance = await loadSwissEph({
-            // With Vite, we use the public directory for static assets
-            wasmPath: '/node_modules/swisseph-wasm/dist/swisseph-wasm.wasm',
+            // Use a relative path that works with Vite
+            wasmPath: '/swisseph-wasm.wasm',
             // Default ephemeris path if you add .se1 files later
             // ephemerisPath: '/ephemeris'
           });

@@ -5,12 +5,12 @@ const fs = require('fs');
 const path = require('path');
 
 const sourceWasmPath = path.resolve(__dirname, '../node_modules/swisseph-wasm/dist/swisseph-wasm.wasm');
-const targetWasmPath = path.resolve(__dirname, 'node_modules/swisseph-wasm/dist/swisseph-wasm.wasm');
-
-// Create directories if they don't exist
-fs.mkdirSync(path.dirname(targetWasmPath), { recursive: true });
+const targetWasmPath = path.resolve(__dirname, 'swisseph-wasm.wasm');
 
 // Copy the WASM file
-fs.copyFileSync(sourceWasmPath, targetWasmPath);
-
-console.log('WASM file copied successfully to', targetWasmPath);
+try {
+  fs.copyFileSync(sourceWasmPath, targetWasmPath);
+  console.log('WASM file copied successfully to', targetWasmPath);
+} catch (err) {
+  console.error('Error copying WASM file:', err);
+}
