@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Eye, EyeOff, LogIn, User, Key } from 'lucide-react';
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
@@ -40,110 +41,122 @@ const LoginForm: React.FC = () => {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-white mb-3">Kundali Cosmos</h1>
-        <div className="h-1 w-16 bg-gradient-to-r from-red-500 to-yellow-500 mx-auto mb-4 rounded-full"></div>
-        <p className="text-white/80 text-lg">Discover Your Astrological Destiny</p>
+        <h1 className="text-4xl font-bold text-white mb-3 font-playfair">Kundali Cosmos</h1>
+        <div className="h-1 w-20 bg-gradient-to-r from-red-500 to-yellow-500 mx-auto mb-4 rounded-full"></div>
+        <p className="text-white/90 text-lg">Discover Your Astrological Destiny</p>
       </div>
       
-      {error && (
-        <div className="bg-red-500/20 border border-red-500/50 text-white p-4 rounded-lg mb-6 text-center">
-          <p>{error}</p>
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-md rounded-xl p-6 md:p-8 shadow-xl border border-white/20">
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-white text-sm font-medium">Email Address</Label>
-            <div className="relative">
-              <div className="absolute left-3 top-3 text-gray-400">
-                <User size={16} />
-              </div>
-              <Input
-                id="email"
-                placeholder="you@example.com"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 bg-white/10 border-white/20 text-white focus:border-red-400 focus:ring-red-400"
-                required
-              />
-            </div>
+      <Card className="backdrop-blur-lg bg-white/15 border-white/20 shadow-xl overflow-hidden">
+        <CardHeader className="px-6 pt-6 pb-0">
+          <h2 className="text-2xl font-semibold text-white text-center">Welcome Back</h2>
+        </CardHeader>
+        
+        {error && (
+          <div className="mx-6 mt-4 bg-red-500/30 border border-red-500/50 text-white p-3 rounded-lg text-center">
+            <p>{error}</p>
           </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-white text-sm font-medium">Password</Label>
-              <a href="#" className="text-red-300 hover:text-red-200 text-sm transition-colors">
-                Forgot password?
-              </a>
-            </div>
-            <div className="relative">
-              <div className="absolute left-3 top-3 text-gray-400">
-                <Key size={16} />
+        )}
+        
+        <CardContent className="px-6 pt-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-white/90 text-sm font-medium">Email Address</Label>
+              <div className="relative">
+                <div className="absolute left-3 top-3 text-white/60">
+                  <User size={16} />
+                </div>
+                <Input
+                  id="email"
+                  placeholder="you@example.com"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10 bg-white/10 border-white/30 text-white placeholder:text-white/50 focus:border-red-400 focus:ring-red-400"
+                  required
+                />
               </div>
-              <Input
-                id="password"
-                placeholder="••••••••"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10 bg-white/10 border-white/20 text-white focus:border-red-400 focus:ring-red-400"
-                required
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-white/90 text-sm font-medium">Password</Label>
+                <a href="#" className="text-red-300 hover:text-red-200 text-sm transition-colors">
+                  Forgot password?
+                </a>
+              </div>
+              <div className="relative">
+                <div className="absolute left-3 top-3 text-white/60">
+                  <Key size={16} />
+                </div>
+                <Input
+                  id="password"
+                  placeholder="••••••••"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 pr-10 bg-white/10 border-white/30 text-white placeholder:text-white/50 focus:border-red-400 focus:ring-red-400"
+                  required
+                />
+                <button 
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-3 text-white/60 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="remember-me" 
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked === true)}
+                className="data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500 border-white/50"
               />
-              <button 
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-3 text-gray-400 hover:text-white"
+              <label 
+                htmlFor="remember-me" 
+                className="text-sm text-white/90 cursor-pointer select-none"
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+                Remember me
+              </label>
             </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="remember-me" 
-              checked={rememberMe}
-              onCheckedChange={(checked) => setRememberMe(checked === true)}
-              className="data-[state=checked]:bg-red-500 data-[state=checked]:border-red-500"
-            />
-            <label 
-              htmlFor="remember-me" 
-              className="text-sm text-white/80 cursor-pointer select-none"
+            
+            <Button 
+              type="submit" 
+              className="w-full h-11 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-medium flex items-center justify-center gap-2 transition-all border-0"
+              disabled={isLoading}
             >
-              Remember me
-            </label>
-          </div>
-          
-          <Button 
-            type="submit" 
-            className="w-full h-11 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-medium flex items-center justify-center gap-2 transition-all"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <div className="flex items-center gap-2">
-                <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-                <span>Logging in...</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <LogIn size={18} />
-                <span>Login</span>
-              </div>
-            )}
-          </Button>
-        </div>
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                  <span>Logging in...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <LogIn size={18} />
+                  <span>Login</span>
+                </div>
+              )}
+            </Button>
+          </form>
+        </CardContent>
 
-        <div className="mt-6 text-center">
-          <p className="text-white/70">
+        <CardFooter className="px-6 pb-6 pt-2 flex justify-center">
+          <p className="text-white/80 text-center">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-red-300 hover:text-red-200 hover:underline transition-colors">
+            <Link to="/signup" className="text-red-300 hover:text-red-200 hover:underline transition-colors font-medium">
               Sign up
             </Link>
           </p>
-        </div>
-      </form>
+        </CardFooter>
+      </Card>
+      
+      <div className="mt-6 text-center">
+        <p className="text-white/60 text-sm">
+          © 2025 Kundali Cosmos | Vedic Astrology Insights
+        </p>
+      </div>
     </div>
   );
 };

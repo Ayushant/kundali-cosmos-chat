@@ -14,17 +14,17 @@ export const SiteHeader: React.FC = () => {
   };
 
   return (
-    <header className="w-full py-4 px-4 md:px-6 flex justify-between items-center bg-gradient-to-r from-red-100 to-red-50 shadow-sm">
+    <header className="w-full py-4 px-4 md:px-6 flex justify-between items-center bg-transparent z-10 relative">
       <div className="flex items-center">
         <Link to="/" className="flex items-center">
-          <h1 className="text-xl md:text-2xl font-bold text-red-600 font-playfair">Kundali Cosmos</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-white font-playfair">Kundali Cosmos</h1>
         </Link>
       </div>
       <div className="flex items-center gap-2">
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center gap-1 hover:bg-red-200 text-red-600"
+          className="flex items-center gap-1 hover:bg-white/10 text-white"
           onClick={() => navigate('/')}
         >
           <Home size={18} />
@@ -33,7 +33,7 @@ export const SiteHeader: React.FC = () => {
         <Button 
           variant="ghost" 
           size="sm"
-          className="flex items-center gap-1 hover:bg-red-200 text-red-600"
+          className="flex items-center gap-1 hover:bg-white/10 text-white"
           onClick={handleLogout}
         >
           <LogOut size={18} />
