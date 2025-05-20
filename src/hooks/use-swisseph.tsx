@@ -28,9 +28,9 @@ export function useSwissEph() {
         if (status !== WasmLoadingStatus.LOADING && !swissEph) {
           setStatus(WasmLoadingStatus.LOADING);
           
-          // The 'default' option uses built-in ephemeris data
-          // This is sufficient for basic calculations but limited in date range
+          // Use the correct path to the WASM file in node_modules
           const instance = await loadSwissEph({
+            // With Vite, we use the public directory for static assets
             wasmPath: '/node_modules/swisseph-wasm/dist/swisseph-wasm.wasm',
             // Default ephemeris path if you add .se1 files later
             // ephemerisPath: '/ephemeris'
