@@ -9,7 +9,6 @@ const SignupPage: React.FC = () => {
     <>
       <Helmet>
         <title>Sign up | Kundali Cosmos</title>
-        <meta name="description" content="Create your Kundali Cosmos account" />
       </Helmet>
       <AuthLayout>
         <SignupForm />

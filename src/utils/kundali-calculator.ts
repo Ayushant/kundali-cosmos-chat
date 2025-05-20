@@ -32,70 +32,42 @@ const zodiacSigns = [
   "Sagittarius", "Capricorn", "Aquarius", "Pisces"
 ];
 
-// Nakshatras in order with their degrees and ruling planets
+// Nakshatras in order
 const nakshatras = [
-  { name: "Ashwini", ruler: "Ketu", start: 0, end: 13.33 },
-  { name: "Bharani", ruler: "Venus", start: 13.33, end: 26.67 },
-  { name: "Krittika", ruler: "Sun", start: 26.67, end: 40 },
-  { name: "Rohini", ruler: "Moon", start: 40, end: 53.33 },
-  { name: "Mrigashira", ruler: "Mars", start: 53.33, end: 66.67 },
-  { name: "Ardra", ruler: "Rahu", start: 66.67, end: 80 },
-  { name: "Punarvasu", ruler: "Jupiter", start: 80, end: 93.33 },
-  { name: "Pushya", ruler: "Saturn", start: 93.33, end: 106.67 },
-  { name: "Ashlesha", ruler: "Mercury", start: 106.67, end: 120 },
-  { name: "Magha", ruler: "Ketu", start: 120, end: 133.33 },
-  { name: "Purva Phalguni", ruler: "Venus", start: 133.33, end: 146.67 },
-  { name: "Uttara Phalguni", ruler: "Sun", start: 146.67, end: 160 },
-  { name: "Hasta", ruler: "Moon", start: 160, end: 173.33 },
-  { name: "Chitra", ruler: "Mars", start: 173.33, end: 186.67 },
-  { name: "Swati", ruler: "Rahu", start: 186.67, end: 200 },
-  { name: "Vishakha", ruler: "Jupiter", start: 200, end: 213.33 },
-  { name: "Anuradha", ruler: "Saturn", start: 213.33, end: 226.67 },
-  { name: "Jyeshtha", ruler: "Mercury", start: 226.67, end: 240 },
-  { name: "Mula", ruler: "Ketu", start: 240, end: 253.33 },
-  { name: "Purva Ashadha", ruler: "Venus", start: 253.33, end: 266.67 },
-  { name: "Uttara Ashadha", ruler: "Sun", start: 266.67, end: 280 },
-  { name: "Shravana", ruler: "Moon", start: 280, end: 293.33 },
-  { name: "Dhanishta", ruler: "Mars", start: 293.33, end: 306.67 },
-  { name: "Shatabhisha", ruler: "Rahu", start: 306.67, end: 320 },
-  { name: "Purva Bhadrapada", ruler: "Jupiter", start: 320, end: 333.33 },
-  { name: "Uttara Bhadrapada", ruler: "Saturn", start: 333.33, end: 346.67 },
-  { name: "Revati", ruler: "Mercury", start: 346.67, end: 360 }
+  "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+  "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+  "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+  "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha",
+  "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
 ];
 
-// Planet names for calculation with associated weights for house strength
-const planetData = {
-  0: { name: 'Sun', weight: 3.5, friend: [5, 3], enemy: [6, 7, 8] },
-  1: { name: 'Moon', weight: 4.0, friend: [0, 2], enemy: [7, 8] },
-  2: { name: 'Mercury', weight: 3.5, friend: [0, 4], enemy: [1] },
-  3: { name: 'Venus', weight: 4.0, friend: [6, 2], enemy: [0, 4] },
-  4: { name: 'Mars', weight: 3.0, friend: [0, 5], enemy: [1, 3] },
-  5: { name: 'Jupiter', weight: 5.0, friend: [0, 4], enemy: [2, 3] },
-  6: { name: 'Saturn', weight: 2.5, friend: [2, 3], enemy: [0, 1, 5] },
-  7: { name: 'Rahu', weight: 2.0, friend: [3, 6], enemy: [0, 1, 5] },
-  8: { name: 'Ketu', weight: 1.5, friend: [4, 0], enemy: [1, 3] }
+// Planet names for calculation
+const planetNames = {
+  0: 'Sun',
+  1: 'Moon',
+  2: 'Mercury',
+  3: 'Venus',
+  4: 'Mars',
+  5: 'Jupiter',
+  6: 'Saturn',
+  7: 'Rahu',
+  8: 'Ketu'
 };
 
-// Planetary aspects and their strengths
-const planetaryAspects = {
-  'Jupiter': [5, 7, 9],  // Jupiter aspects 5th, 7th, 9th houses 
-  'Mars': [4, 7, 8],     // Mars aspects 4th, 7th, 8th houses
-  'Saturn': [3, 7, 10]   // Saturn aspects 3rd, 7th, 10th houses
-};
+// List of planets to calculate
+const planetsToCalculate = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
-// Conversion of UTC hour to sidereal time correction
-function getUTCToSiderealCorrection(date: Date): number {
-  const y = date.getUTCFullYear();
-  const m = date.getUTCMonth() + 1;
-  const d = date.getUTCDate();
-  
-  // Julian centuries since J2000.0
-  const jd = getJulianDay(date, '0:00');
-  const T = (jd - 2451545.0) / 36525.0;
-  
-  // Correction in seconds
-  const correction = 0.00002581 * T * T;
-  return correction * 15; // Convert to degrees (15° per hour)
+// Helper function to determine zodiac sign based on longitude
+function getZodiacSignFromLongitude(longitude: number): string {
+  const signIndex = Math.floor(longitude / 30) % 12;
+  return zodiacSigns[signIndex];
+}
+
+// Helper function to get nakshatra based on longitude
+function getNakshatraFromLongitude(longitude: number): string {
+  // Each nakshatra spans 13°20' (13.33°) of the zodiac
+  const nakshatraIndex = Math.floor((longitude * 27) / 360) % 27;
+  return nakshatras[nakshatraIndex];
 }
 
 // Calculate Julian day number from date and time
@@ -106,7 +78,8 @@ function getJulianDay(date: Date, timeStr: string): number {
   const dateTime = new Date(date);
   dateTime.setHours(hours, minutes, 0, 0);
   
-  // Calculate Julian day using improved formula
+  // Calculate Julian day
+  // Formula based on astronomical algorithms
   const y = dateTime.getUTCFullYear();
   const m = dateTime.getUTCMonth() + 1;
   const d = dateTime.getUTCDate() + 
@@ -115,75 +88,47 @@ function getJulianDay(date: Date, timeStr: string): number {
   let jd = 0;
   
   if (m <= 2) {
-    const y1 = y - 1;
-    jd = Math.floor(365.25 * y1) + Math.floor(30.6001 * (m + 12)) + d + 1720994.5;
+    jd = Math.floor(365.25 * (y - 1)) + Math.floor(30.6001 * (m + 12)) + d + 1720994.5;
   } else {
-    jd = Math.floor(365.25 * y) + Math.floor(30.6001 * m) + d + 1720994.5;
+    jd = Math.floor(365.25 * y) + Math.floor(30.6001 * (m)) + d + 1720994.5;
   }
   
-  // Gregorian calendar correction
   const a = Math.floor(y / 100);
   const b = 2 - a + Math.floor(a / 4);
   
   if (y < 1582 || (y === 1582 && m < 10) || (y === 1582 && m === 10 && d <= 15)) {
-    // Before Gregorian calendar reform (Oct 15, 1582)
+    // Before Gregorian calendar
     return jd;
   } else {
-    // After Gregorian calendar reform
+    // After Gregorian calendar
     return jd + b;
   }
 }
 
-// Calculate sidereal time
-function calculateSiderealTime(julianDay: number): number {
-  // Calculate Greenwich Mean Sidereal Time
-  const T = (julianDay - 2451545.0) / 36525.0;
-  
-  // Improved formula for GMST at 0h UTC
-  let gmst = 100.46061837 + 36000.770053608 * T + 0.000387933 * T * T - T * T * T / 38710000.0;
-  gmst = gmst % 360.0;
-  if (gmst < 0) gmst += 360.0;
-  
-  return gmst;
-}
-
-// Calculate ascendant (Lagna) with improved accuracy
+// Calculate ascendant (Lagna)
 function calculateAscendant(julianDay: number, latitude: number, longitude: number): string {
   try {
-    // Calculate sidereal time at Greenwich
-    const siderealTime = calculateSiderealTime(julianDay);
+    // Simplified ascendant calculation based on sidereal time and location
+    // This is a simplified formula - for precise calculations, an astronomical library is needed
     
-    // Adjust for location's longitude
+    // Convert JD to centuries since J2000.0
+    const T = (julianDay - 2451545.0) / 36525.0;
+    
+    // Calculate GMST at 0h UT
+    let gmst = 100.46061837 + 36000.770053608 * T + 0.000387933 * T * T - T * T * T / 38710000.0;
+    gmst = gmst % 360.0;
+    if (gmst < 0) gmst += 360.0;
+    
+    // Add correction for time of day and observer's longitude
     const dayFraction = (julianDay % 1.0);
-    const rotationalAngle = dayFraction * 360.0;
-    let localSiderealTime = (siderealTime + rotationalAngle + longitude) % 360.0;
+    const rotationalAngle = dayFraction * 360.0 + longitude;
+    let localSiderealTime = (gmst + rotationalAngle) % 360.0;
     if (localSiderealTime < 0) localSiderealTime += 360.0;
     
-    // Calculate obliquity of ecliptic
-    const T = (julianDay - 2451545.0) / 36525.0;
-    const obliquity = 23.4392911 - 0.0130042 * T - 0.00000164 * T * T + 0.000000503 * T * T * T;
-    const obliqRad = obliquity * Math.PI / 180.0;
-    
-    // Convert LST to hour angle
-    const hourAngle = localSiderealTime;
-    const hourAngleRad = hourAngle * Math.PI / 180.0;
-    
-    // Calculate ascendant using more accurate formula
-    const latitudeRad = latitude * Math.PI / 180.0;
-    
-    const tanAsc = -Math.cos(hourAngleRad) / 
-                  (Math.sin(hourAngleRad) * Math.cos(obliqRad) + 
-                   Math.tan(latitudeRad) * Math.sin(obliqRad));
-    
-    let ascendantLongitude = Math.atan(tanAsc) * 180.0 / Math.PI;
-    
-    // Adjust quadrant
-    if (Math.cos(hourAngleRad) > 0) {
-      ascendantLongitude += 180.0;
-    }
-    if (ascendantLongitude < 0) {
-      ascendantLongitude += 360.0;
-    }
+    // Calculate ascendant using LST and latitude
+    // This is a simplified approach - full implementation would need obliquity of ecliptic
+    // and proper astronomical formulas
+    const ascendantLongitude = (localSiderealTime + 90) % 360;
     
     // Get sign and degree
     const ascendantSign = getZodiacSignFromLongitude(ascendantLongitude);
@@ -196,103 +141,73 @@ function calculateAscendant(julianDay: number, latitude: number, longitude: numb
   }
 }
 
-// Helper function to determine zodiac sign based on longitude
-function getZodiacSignFromLongitude(longitude: number): string {
-  const normalizedLongitude = longitude % 360;
-  const signIndex = Math.floor(normalizedLongitude / 30) % 12;
-  return zodiacSigns[signIndex];
-}
-
-// Helper function to get nakshatra based on longitude
-function getNakshatraFromLongitude(longitude: number): string {
-  const normalizedLongitude = longitude % 360;
-  
-  // Find the nakshatra that contains this longitude
-  for (const nakshatra of nakshatras) {
-    if (normalizedLongitude >= nakshatra.start && normalizedLongitude < nakshatra.end) {
-      return nakshatra.name;
-    }
-  }
-  
-  // Fallback
-  const nakshatraIndex = Math.floor((normalizedLongitude * 27) / 360) % 27;
-  return nakshatras[nakshatraIndex].name;
-}
-
-// Calculate planetary positions with improved accuracy
+// Calculate planetary positions using a deterministic algorithm based on birth details
 function calculatePlanetaryPositions(birthDate: Date, julianDay: number, latitude: number, longitude: number, ascendant: string): PlanetPosition[] {
   const planets: PlanetPosition[] = [];
   const ascendantSign = ascendant.split('-')[0].trim();
   const ascendantIndex = zodiacSigns.indexOf(ascendantSign);
   
   try {
-    // Using a more deterministic algorithm based on astronomical patterns
+    // For browser compatibility, we'll use a deterministic algorithm
+    // based on birth details to calculate planetary positions
+    // This is NOT astronomically accurate, but provides consistent results
+    
+    // Calculate a seed from birth details
     const year = birthDate.getFullYear();
     const month = birthDate.getMonth();
     const day = birthDate.getDate();
-    const hour = parseInt(birthDate.toTimeString().substring(0, 2));
-    const minute = parseInt(birthDate.toTimeString().substring(3, 5));
     
-    // Base calculations on Julian day and ayanamsa (precession)
-    const T = (julianDay - 2451545.0) / 36525.0;
-    const ayanamsa = 23.85 + 0.0001298 * T; // Simplified ayanamsa calculation
+    // Generate an initial seed based on date components
+    let seed = year * 10000 + month * 100 + day;
     
-    // Planet positions calculated relative to astronomical constants and seed values
-    const planetSeeds = [
-      { id: 0, name: 'Sun', base: 280.46 + 0.9856474 * (julianDay - 2451545.0), period: 365.25 },
-      { id: 1, name: 'Moon', base: 218.32 + 13.17639648 * (julianDay - 2451545.0), period: 27.32 },
-      { id: 2, name: 'Mercury', base: 252.25 + 1.5719 * (julianDay - 2451545.0), period: 87.97 },
-      { id: 3, name: 'Venus', base: 181.98 + 0.6152 * (julianDay - 2451545.0), period: 224.70 },
-      { id: 4, name: 'Mars', base: 355.43 + 0.5240 * (julianDay - 2451545.0), period: 686.98 },
-      { id: 5, name: 'Jupiter', base: 34.35 + 0.0843 * (julianDay - 2451545.0), period: 4332.59 },
-      { id: 6, name: 'Saturn', base: 50.58 + 0.0339 * (julianDay - 2451545.0), period: 10759.22 },
-      { id: 7, name: 'Rahu', base: (180 + 0.0529539 * (julianDay - 2451545.0)) % 360, period: 6793.32 }
-    ];
-    
-    // Generate planetary positions from the seeds
-    planetSeeds.forEach(planet => {
-      // Calculate mean anomaly and longitude
-      const meanAnomaly = (planet.base + (year - 2000) * 360 / planet.period) % 360;
+    // Use the seed to generate planetary positions
+    for (const planetId of planetsToCalculate) {
+      // Generate a "random" but deterministic longitude for each planet
+      // based on the seed and planet ID
+      const individualSeed = seed + (planetId * 1000);
       
-      // Add small personal variations based on birth details
-      const personalFactor = ((day + month * 30 + hour + minute / 60) % 30) / 30;
-      const variation = 15 * personalFactor; // Up to 15 degrees variation
+      // Generate longitude (0-360 degrees)
+      const longitude = (individualSeed % 360);
       
-      // Calculate final longitude with variation
-      const longitude = (meanAnomaly + variation) % 360;
+      // Determine sign, house, etc.
       const sign = getZodiacSignFromLongitude(longitude);
       const signIndex = zodiacSigns.indexOf(sign);
       
       // Calculate house (based on ascendant)
       const house = ((signIndex - ascendantIndex) + 12) % 12 + 1;
       
-      // Calculate degree within sign and nakshatra
+      // Calculate degree within sign
       const degree = Math.floor(longitude % 30);
+      
+      // Get nakshatra
       const nakshatra = getNakshatraFromLongitude(longitude);
       
+      // Special case for Ketu (opposite to Rahu)
+      if (planetId === 8 && planets.length > 0) {
+        const rahu = planets.find(p => p.name === 'Rahu');
+        if (rahu) {
+          // Ketu is 180° opposite to Rahu
+          const ketuSignIndex = (zodiacSigns.indexOf(rahu.sign) + 6) % 12;
+          const ketuSign = zodiacSigns[ketuSignIndex];
+          const ketuHouse = ((rahu.house + 5) % 12) + 1;
+          
+          planets.push({
+            name: 'Ketu',
+            sign: ketuSign,
+            house: ketuHouse,
+            degree: rahu.degree,
+            nakshatra: getNakshatraFromLongitude((ketuSignIndex * 30) + (rahu.degree || 0))
+          });
+          continue;
+        }
+      }
+      
       planets.push({
-        name: planetData[planet.id as keyof typeof planetData].name,
+        name: planetNames[planetId as keyof typeof planetNames],
         sign,
         house,
         degree,
         nakshatra
-      });
-    });
-    
-    // Add Ketu (opposite to Rahu)
-    const rahu = planets.find(p => p.name === 'Rahu');
-    if (rahu) {
-      // Ketu is 180° opposite to Rahu
-      const ketuSignIndex = (zodiacSigns.indexOf(rahu.sign) + 6) % 12;
-      const ketuSign = zodiacSigns[ketuSignIndex];
-      const ketuHouse = ((rahu.house + 5) % 12) + 1;
-      
-      planets.push({
-        name: 'Ketu',
-        sign: ketuSign,
-        house: ketuHouse,
-        degree: rahu.degree,
-        nakshatra: getNakshatraFromLongitude((ketuSignIndex * 30) + (rahu.degree || 0))
       });
     }
     
@@ -317,47 +232,24 @@ function calculatePlanetaryPositions(birthDate: Date, julianDay: number, latitud
 
 // Calculate the current dasha
 function calculateCurrentDasha(birthDate: Date): string {
-  // Enhanced Vimshottari Dasha calculation
+  // Simplified dasha calculation
   const dashaLords = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"];
   const dashaDurations = [7, 20, 6, 10, 7, 18, 16, 19, 17]; // Years
-  const totalCycle = dashaDurations.reduce((a, b) => a + b, 0); // 120 years
   
   const birthYear = birthDate.getFullYear();
-  const birthMonth = birthDate.getMonth();
-  const birthDay = birthDate.getDate();
-  
-  // Get current date and calculate years passed since birth more accurately
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
-  const currentDay = currentDate.getDate();
-  
-  let yearsPassed = currentYear - birthYear;
-  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
-    yearsPassed--; // Adjust if birthday hasn't occurred yet this year
-  }
-  
-  // Calculate birth star (nakshatra) based on moon position at birth
-  // This would be more accurate with actual moon position calculation
-  // For now, we'll use a simplified approach using the birth date as a seed
-  const birthSeed = birthDay + birthMonth * 30 + (birthYear % 100);
-  const startingNakshatra = birthSeed % 27;
-  const startingDashaLord = Math.floor(startingNakshatra / 3) % 9; // Simplified mapping
-  
-  // Calculate where in the 120 year cycle the person is
-  const yearInCycle = yearsPassed % totalCycle;
+  const currentYear = new Date().getFullYear();
+  const yearsPassed = currentYear - birthYear;
   
   let accumulatedYears = 0;
-  let lordIndex = startingDashaLord;
+  let lordIndex = 0;
   
   // Find which dasha we're currently in
   for (let i = 0; i < dashaLords.length; i++) {
-    const adjustedIndex = (startingDashaLord + i) % 9;
-    if (accumulatedYears + dashaDurations[adjustedIndex] > yearInCycle) {
-      lordIndex = adjustedIndex;
+    if (accumulatedYears + dashaDurations[i] > yearsPassed) {
+      lordIndex = i;
       break;
     }
-    accumulatedYears += dashaDurations[adjustedIndex];
+    accumulatedYears += dashaDurations[i];
   }
   
   const startYear = birthYear + accumulatedYears;
@@ -366,79 +258,60 @@ function calculateCurrentDasha(birthDate: Date): string {
   return `${dashaLords[lordIndex]} Mahadasha (${startYear}-${endYear})`;
 }
 
-// Calculate strong and weak houses based on planetary positions with improved accuracy
+// Calculate strong and weak houses based on planetary positions
 function calculateHouseStrengths(planets: PlanetPosition[]): { strongHouses: number[], weakHouses: number[] } {
-  // Initialize house strengths
+  // Count planet influence in houses
   const houseStrengths: {[key: number]: number} = {};
   for (let i = 1; i <= 12; i++) {
     houseStrengths[i] = 0;
   }
   
+  // Assign weights to planets
+  const planetStrength: {[key: string]: number} = {
+    'Sun': 3,
+    'Moon': 4,
+    'Mars': 3,
+    'Mercury': 3,
+    'Jupiter': 5,
+    'Venus': 4,
+    'Saturn': 2,
+    'Rahu': 2,
+    'Ketu': 1
+  };
+  
   // Calculate house strengths based on planet positions and aspects
   planets.forEach(planet => {
-    const planetInfo = Object.values(planetData).find(p => p.name === planet.name);
-    if (!planetInfo) return;
-    
-    // Base strength to the house where planet is located
+    // Add strength to the house where planet is located
     const house = planet.house;
-    houseStrengths[house] += planetInfo.weight;
+    houseStrengths[house] += planetStrength[planet.name] || 2;
     
     // Add influence to aspected houses
-    // All planets aspect the 7th house from their position
+    // 7th aspect (opposite house)
     const seventhHouse = ((house + 6) % 12) || 12;
-    houseStrengths[seventhHouse] += planetInfo.weight / 2;
+    houseStrengths[seventhHouse] += (planetStrength[planet.name] || 2) / 2;
     
-    // Special aspects for Jupiter, Mars and Saturn
-    if (planet.name === 'Jupiter' && planetaryAspects['Jupiter']) {
-      planetaryAspects['Jupiter'].forEach(aspect => {
-        if (aspect === 7) return; // Skip 7th aspect as it's already calculated
-        const aspectHouse = ((house + aspect - 1) % 12) || 12;
-        houseStrengths[aspectHouse] += planetInfo.weight / 2.5;
-      });
-    } else if (planet.name === 'Mars' && planetaryAspects['Mars']) {
-      planetaryAspects['Mars'].forEach(aspect => {
-        if (aspect === 7) return; // Skip 7th aspect as it's already calculated
-        const aspectHouse = ((house + aspect - 1) % 12) || 12;
-        houseStrengths[aspectHouse] += planetInfo.weight / 2.5;
-      });
-    } else if (planet.name === 'Saturn' && planetaryAspects['Saturn']) {
-      planetaryAspects['Saturn'].forEach(aspect => {
-        if (aspect === 7) return; // Skip 7th aspect as it's already calculated
-        const aspectHouse = ((house + aspect - 1) % 12) || 12;
-        houseStrengths[aspectHouse] += planetInfo.weight / 2.5;
-      });
-    }
-    
-    // Consider exaltation and debilitation
-    const exaltationSigns: {[key: string]: string} = {
-      'Sun': 'Aries',
-      'Moon': 'Taurus',
-      'Mercury': 'Virgo',
-      'Venus': 'Pisces',
-      'Mars': 'Capricorn',
-      'Jupiter': 'Cancer',
-      'Saturn': 'Libra',
-      'Rahu': 'Gemini',
-      'Ketu': 'Sagittarius'
-    };
-    
-    const debilitationSigns: {[key: string]: string} = {
-      'Sun': 'Libra',
-      'Moon': 'Scorpio',
-      'Mercury': 'Pisces',
-      'Venus': 'Virgo',
-      'Mars': 'Cancer',
-      'Jupiter': 'Capricorn',
-      'Saturn': 'Aries',
-      'Rahu': 'Sagittarius',
-      'Ketu': 'Gemini'
-    };
-    
-    // Adjust strength based on exaltation or debilitation
-    if (exaltationSigns[planet.name] === planet.sign) {
-      houseStrengths[house] += planetInfo.weight * 0.5;
-    } else if (debilitationSigns[planet.name] === planet.sign) {
-      houseStrengths[house] -= planetInfo.weight * 0.4;
+    // Additional aspects for Jupiter, Mars and Saturn
+    if (planet.name === 'Jupiter') {
+      // Jupiter aspects 5th, 7th, 9th houses from its position
+      const fifthHouse = ((house + 4) % 12) || 12;
+      const ninthHouse = ((house + 8) % 12) || 12;
+      
+      houseStrengths[fifthHouse] += planetStrength[planet.name] / 3;
+      houseStrengths[ninthHouse] += planetStrength[planet.name] / 3;
+    } else if (planet.name === 'Mars') {
+      // Mars aspects 4th, 7th, 8th houses from its position
+      const fourthHouse = ((house + 3) % 12) || 12;
+      const eighthHouse = ((house + 7) % 12) || 12;
+      
+      houseStrengths[fourthHouse] += planetStrength[planet.name] / 3;
+      houseStrengths[eighthHouse] += planetStrength[planet.name] / 3;
+    } else if (planet.name === 'Saturn') {
+      // Saturn aspects 3rd, 7th, 10th houses from its position
+      const thirdHouse = ((house + 2) % 12) || 12;
+      const tenthHouse = ((house + 9) % 12) || 12;
+      
+      houseStrengths[thirdHouse] += planetStrength[planet.name] / 3;
+      houseStrengths[tenthHouse] += planetStrength[planet.name] / 3;
     }
   });
   
