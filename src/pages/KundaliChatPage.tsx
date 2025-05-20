@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AppLayout from '@/components/layout/app-layout';
 import KundaliChart from '@/components/kundali/kundali-chart';
 import ChatInterface from '@/components/chat/chat-interface';
@@ -28,6 +28,7 @@ interface KundaliData {
 
 const KundaliChatPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const birthDetails = location.state?.birthDetails;
   const [showSidebar, setShowSidebar] = useState(true);
   const [kundaliInsights, setKundaliInsights] = useState<KundaliData | null>(null);
@@ -55,6 +56,19 @@ const KundaliChatPage: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [showSidebar]);
 
+  // Check if birth details exist, if not redirect to birth details page
+  useEffect(() => {
+    if (!birthDetails) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter your birth details first to generate your Kundali chart.",
+        variant: "destructive",
+        duration: 5000,
+      });
+      navigate('/birth-details');
+    }
+  }, [birthDetails, navigate, toast]);
+
   // Extract relevant data from the kundali chart for the chat
   useEffect(() => {
     if (birthDetails) {
@@ -79,14 +93,6 @@ const KundaliChatPage: React.FC = () => {
       } finally {
         setIsCalculating(false);
       }
-    } else {
-      // If no birth details provided, redirect or show message
-      toast({
-        title: "Missing Information",
-        description: "Birth details are required to generate your Kundali chart.",
-        variant: "destructive",
-        duration: 5000,
-      });
     }
   }, [birthDetails, toast]);
 
