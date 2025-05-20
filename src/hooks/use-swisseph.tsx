@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from 'react';
+import * as swisseph from 'swisseph';
 
 // Define the SwissEph type here to avoid direct imports
-// This type definition matches the structure of the swisseph-wasm module
+// This type definition matches the structure we need for the app
 export interface SwissEph {
   swe_julday: (year: number, month: number, day: number, hour: number, flag: number) => number;
   swe_calc_ut: (julDay: number, planet: number, flag: number) => { longitude: number; latitude: number; distance: number };
@@ -20,7 +21,7 @@ export interface SwissEph {
   SEFLG_SIDEREAL: number;
 }
 
-// Status enum for WASM loading states
+// Status enum for library loading states
 export enum WasmLoadingStatus {
   LOADING = 'loading',
   LOADED = 'loaded',
@@ -28,37 +29,37 @@ export enum WasmLoadingStatus {
   IDLE = 'idle'
 }
 
-// Mock implementation since the real swisseph-wasm package doesn't exist
-const createMockSwissEph = (): SwissEph => {
+// Create a wrapper around the swisseph library to match our interface
+const createSwissEphWrapper = (): SwissEph => {
   return {
     swe_julday: (year, month, day, hour, flag) => {
-      // Return mock Julian day (approximate for May 20, 2025)
-      return 2460785.5 + hour/24;
+      return swisseph.swe_julday(year, month, day, hour, flag);
     },
     swe_calc_ut: (julDay, planet, flag) => {
-      // Return mock planet position
+      const result = swisseph.swe_calc_ut(julDay, planet, flag);
       return { 
-        longitude: planet * 30 % 360, 
-        latitude: 0, 
-        distance: 1 
+        longitude: result.longitude, 
+        latitude: result.latitude, 
+        distance: result.distance 
       };
     },
     swe_houses_ex: (julDay, flag, lat, lon, hsys) => {
-      // Return mock houses
-      const cusps = Array(13).fill(0).map((_, i) => (i * 30) % 360);
+      const result = swisseph.swe_houses(julDay, lat, lon, hsys);
       return { 
-        ascendant: 0, 
-        mc: 270, 
-        armc: 270, 
-        vertex: 90, 
-        equasc: 0,
-        cusps 
+        ascendant: result.ascendant, 
+        mc: result.mc, 
+        armc: result.armc, 
+        vertex: result.vertex, 
+        equasc: result.equasc,
+        cusps: result.cusps
       };
     },
-    swe_set_sid_mode: () => {},
-    SE_SIDM_LAHIRI: 1,
-    SE_GREG_CAL: 1,
-    SEFLG_SIDEREAL: 256
+    swe_set_sid_mode: (mode, t0, ayan_t0) => {
+      swisseph.swe_set_sid_mode(mode, t0, ayan_t0);
+    },
+    SE_SIDM_LAHIRI: swisseph.SE_SIDM_LAHIRI,
+    SE_GREG_CAL: swisseph.SE_GREG_CAL,
+    SEFLG_SIDEREAL: swisseph.SEFLG_SIDEREAL
   };
 };
 
@@ -68,7 +69,7 @@ export function useSwissEph() {
   const [status, setStatus] = useState<WasmLoadingStatus>(WasmLoadingStatus.IDLE);
   const [error, setError] = useState<Error | null>(null);
 
-  // Load the mock implementation when the component mounts
+  // Load the library when the component mounts
   useEffect(() => {
     let isMounted = true;
 
@@ -77,13 +78,19 @@ export function useSwissEph() {
         if (status !== WasmLoadingStatus.LOADING && !swissEph) {
           setStatus(WasmLoadingStatus.LOADING);
           
-          // Since swisseph-wasm doesn't exist, we'll always use the mock implementation
-          console.log('Using mock SwissEph implementation');
-          const mockInstance = createMockSwissEph();
+          // Initialize the swisseph library
+          console.log('Initializing SwissEph library');
+          
+          // Create a wrapper around the swisseph library
+          const ephemerisInstance = createSwissEphWrapper();
+          
+          // Set Lahiri ayanamsa as default (Vedic astrology)
+          ephemerisInstance.swe_set_sid_mode(ephemerisInstance.SE_SIDM_LAHIRI, 0, 0);
           
           if (isMounted) {
-            setSwissEph(mockInstance);
+            setSwissEph(ephemerisInstance);
             setStatus(WasmLoadingStatus.LOADED);
+            console.log('SwissEph library loaded successfully');
           }
         }
       } catch (err) {

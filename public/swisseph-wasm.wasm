@@ -1,2 +1,3 @@
-// This is just a placeholder file
-// We're using a mock implementation instead since swisseph-wasm doesn't exist in npm
+
+// This file is no longer needed as we're using the swisseph npm package
+// instead of a WASM implementation
