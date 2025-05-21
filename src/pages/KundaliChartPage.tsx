@@ -71,7 +71,7 @@ const KundaliChartPage: React.FC = () => {
           )}
         </div>
         
-        <Card className="bg-gradient-to-br from-yellow-50 to-red-50 border-orange-100 mb-4 sm:mb-6">
+        <Card className="bg-gradient-to-br from-yellow-50 to-red-50 border-orange-100 mb-4 sm:mb-6 overflow-hidden">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl sm:text-3xl font-bold text-red-600">Your Kundali Chart</CardTitle>
             <CardDescription className="text-sm sm:text-base text-orange-700">
@@ -81,10 +81,12 @@ const KundaliChartPage: React.FC = () => {
           <CardContent className="px-2 sm:px-6">
             {/* Calculator (hidden when chart is ready) */}
             {(!kundaliData && birthDetails) && (
-              <KundaliCalculator 
-                birthDetails={birthDetails} 
-                onCalculationComplete={handleCalculationComplete} 
-              />
+              <div className="h-[300px] sm:h-[500px]">
+                <KundaliCalculator 
+                  birthDetails={birthDetails} 
+                  onCalculationComplete={handleCalculationComplete} 
+                />
+              </div>
             )}
             
             {/* Show regular chart once data is available */}
@@ -118,10 +120,28 @@ const KundaliChartPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="px-2 sm:px-6 overflow-x-auto">
-              <KundaliCalculator 
-                birthDetails={birthDetails} 
-                onCalculationComplete={handleCalculationComplete} 
-              />
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs sm:text-sm">
+                  <thead className="bg-orange-100">
+                    <tr>
+                      <th className="px-1 sm:px-2 py-1 text-left text-orange-800">Planet</th>
+                      <th className="px-1 sm:px-2 py-1 text-left text-orange-800">Sign</th>
+                      <th className="px-1 sm:px-2 py-1 text-left text-orange-800">House</th>
+                      <th className="px-1 sm:px-2 py-1 text-left text-orange-800">Degree</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-orange-100">
+                    {kundaliData?.planets.map((planet, index) => (
+                      <tr key={index}>
+                        <td className="px-1 sm:px-2 py-1">{planet.name}</td>
+                        <td className="px-1 sm:px-2 py-1">{planet.sign}</td>
+                        <td className="px-1 sm:px-2 py-1">{planet.house}</td>
+                        <td className="px-1 sm:px-2 py-1">{planet.degree ? `${planet.degree}°` : '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         )}

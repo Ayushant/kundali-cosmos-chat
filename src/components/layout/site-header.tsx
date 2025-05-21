@@ -17,7 +17,7 @@ export const SiteHeader: React.FC = () => {
   return (
     <header className="w-full py-2 sm:py-3 px-3 sm:px-4 flex justify-between items-center bg-gradient-to-r from-red-100 to-red-50 shadow-sm">
       <div className="flex items-center">
-        <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-red-600">Kundali Cosmos</h1>
+        <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-red-600 whitespace-nowrap">Kundali Cosmos</h1>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -34,7 +34,7 @@ export const SiteHeader: React.FC = () => {
       </div>
       <Button 
         variant="ghost" 
-        className="flex items-center gap-1 hover:bg-red-200 text-red-600 px-2 sm:px-4 py-1 sm:py-2"
+        className="flex items-center gap-1 hover:bg-red-200 text-red-600 px-2 sm:px-4 py-1 sm:py-2 min-w-[40px] sm:min-w-[80px]"
         onClick={handleLogout}
       >
         <LogOut size={16} />
