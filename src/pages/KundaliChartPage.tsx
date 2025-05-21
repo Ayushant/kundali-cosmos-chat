@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import AppLayout from '@/components/layout/app-layout';
@@ -9,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ArrowLeft } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { PlanetPosition } from '@/utils/kundali-engine';
+import '@/styles/chat.css';  // Import CSS for chat bubbles
 
 const KundaliChartPage: React.FC = () => {
   const location = useLocation();

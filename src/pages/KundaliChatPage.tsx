@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AppLayout from '@/components/layout/app-layout';
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { calculateKundali } from '@/utils/kundali-calculator';
 import { useToast } from '@/components/ui/use-toast';
+import '@/styles/chat.css';  // Import CSS for chat bubbles
 
 // Define the KundaliData interface to match what is returned from calculateKundali
 interface KundaliData {
@@ -141,4 +141,3 @@ const KundaliChatPage: React.FC = () => {
 };
 
 export default KundaliChatPage;
-
