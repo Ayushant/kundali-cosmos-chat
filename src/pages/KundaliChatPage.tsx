@@ -100,8 +100,8 @@ const KundaliChatPage: React.FC = () => {
     <AppLayout>
       {isMobile ? (
         // Mobile view with drawer
-        <div className="container mx-auto px-2 w-full">
-          <div className="flex flex-col w-full">
+        <div className="container mx-auto px-2 w-full h-full">
+          <div className="flex flex-col w-full h-full">
             <Drawer>
               <DrawerTrigger asChild>
                 <Button 
@@ -126,7 +126,7 @@ const KundaliChatPage: React.FC = () => {
             </Drawer>
             
             {/* Chat interface centered on mobile */}
-            <div className="w-full mt-2">
+            <div className="w-full mt-2 flex-1 overflow-y-auto">
               <ChatInterface 
                 isFullWidth={true} 
                 kundaliInsights={kundaliInsights || {}}
@@ -136,12 +136,12 @@ const KundaliChatPage: React.FC = () => {
         </div>
       ) : (
         // Desktop view with sidebar
-        <SidebarProvider defaultOpen={true} className="w-full">
-          <div className="flex min-h-[calc(100vh-80px)] w-full">
+        <SidebarProvider defaultOpen={true} className="w-full h-full">
+          <div className="flex w-full h-[calc(100vh-8rem)]">
             <Sidebar side="left" className="kundali-sidebar" collapsible="offcanvas">
               <SidebarContent className="p-4 w-80 sidebar-content">
                 <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
-                <div className="overflow-y-auto flex-grow">
+                <div className="overflow-y-auto flex-1">
                   <KundaliChart 
                     birthDetails={birthDetails} 
                     kundaliData={kundaliInsights || undefined} 
@@ -151,8 +151,8 @@ const KundaliChatPage: React.FC = () => {
               </SidebarContent>
             </Sidebar>
             
-            <div className="flex-1 flex items-center justify-center p-4 overflow-y-auto">
-              <div className="w-full max-w-3xl">
+            <div className="flex-1 p-4 overflow-y-auto flex flex-col">
+              <div className="w-full max-w-3xl mx-auto flex-1 flex flex-col">
                 <div className="flex items-center mb-4">
                   <SidebarTrigger className="mr-2">
                     <ChevronLeft className="h-5 w-5" />

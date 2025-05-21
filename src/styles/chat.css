@@ -63,6 +63,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 /* Ensure no whitespace in sidebar */
@@ -72,4 +73,21 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+/* Fix for kundali chart in sidebar */
+div[data-sidebar="sidebar"] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Ensure chat interface takes full height */
+div[data-sidebar="content"] {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }

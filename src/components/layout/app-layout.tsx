@@ -10,7 +10,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-red-50 to-white">
       <SiteHeader />
-      <main className="flex-grow flex">
+      <main className="flex-grow flex w-full overflow-hidden">
         {children}
       </main>
       <footer className="py-3 px-4 text-center text-sm text-red-700/60 bg-red-50 border-t border-red-100">
