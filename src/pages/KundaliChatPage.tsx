@@ -99,10 +99,10 @@ const KundaliChatPage: React.FC = () => {
   return (
     <AppLayout>
       {isMobile ? (
-        // Mobile view with drawer
+        // Mobile view with drawer sliding from left
         <div className="container mx-auto px-2 w-full h-full">
           <div className="flex flex-col w-full h-full">
-            <Drawer>
+            <Drawer direction="left">
               <DrawerTrigger asChild>
                 <Button 
                   variant="outline"
@@ -112,7 +112,7 @@ const KundaliChatPage: React.FC = () => {
                   View Your Kundali Chart
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="max-h-[90vh] overflow-y-auto">
+              <DrawerContent side="left" className="max-h-[90vh] overflow-y-auto">
                 <div className="p-4">
                   <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
                   <KundaliChart 
@@ -136,38 +136,46 @@ const KundaliChatPage: React.FC = () => {
         </div>
       ) : (
         // Desktop view with sidebar
-        <SidebarProvider defaultOpen={true} className="w-full h-full">
-          <div className="flex w-full h-[calc(100vh-8rem)]">
-            <Sidebar side="left" className="kundali-sidebar" collapsible="offcanvas">
-              <SidebarContent className="p-4 w-80 sidebar-content">
-                <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
-                <div className="overflow-y-auto flex-1">
-                  <KundaliChart 
-                    birthDetails={birthDetails} 
-                    kundaliData={kundaliInsights || undefined} 
-                    isLoading={isCalculating}
+        <div className="w-full h-[calc(100vh-8rem)] flex">
+          <SidebarProvider defaultOpen={true}>
+            <div className="flex w-full h-full">
+              <Sidebar side="left" className="kundali-sidebar sidebar-shadow sidebar-transition" collapsible="offcanvas">
+                <SidebarContent className="p-4 w-80 sidebar-content">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-orange-700">Your Kundali Chart</h2>
+                    <SidebarTrigger className="ml-2">
+                      <ChevronLeft className="h-5 w-5" />
+                      <span className="sr-only">Hide Kundali Chart</span>
+                    </SidebarTrigger>
+                  </div>
+                  <div className="overflow-y-auto flex-1">
+                    <KundaliChart 
+                      birthDetails={birthDetails} 
+                      kundaliData={kundaliInsights || undefined} 
+                      isLoading={isCalculating}
+                    />
+                  </div>
+                </SidebarContent>
+              </Sidebar>
+              
+              <div className="flex-1 p-4 overflow-y-auto flex flex-col">
+                <div className="w-full max-w-3xl mx-auto flex-1 flex flex-col">
+                  <div className="flex items-center mb-4">
+                    <SidebarTrigger className="mr-2">
+                      <ChevronRight className="h-5 w-5" />
+                      <span className="sr-only">Show Kundali Chart</span>
+                    </SidebarTrigger>
+                    <h2 className="text-xl font-semibold text-orange-700">Astrological Insights Chat</h2>
+                  </div>
+                  <ChatInterface 
+                    isFullWidth={true} 
+                    kundaliInsights={kundaliInsights || {}}
                   />
                 </div>
-              </SidebarContent>
-            </Sidebar>
-            
-            <div className="flex-1 p-4 overflow-y-auto flex flex-col">
-              <div className="w-full max-w-3xl mx-auto flex-1 flex flex-col">
-                <div className="flex items-center mb-4">
-                  <SidebarTrigger className="mr-2">
-                    <ChevronLeft className="h-5 w-5" />
-                    <span className="sr-only">Toggle Kundali Sidebar</span>
-                  </SidebarTrigger>
-                  <h2 className="text-xl font-semibold text-orange-700">Astrological Insights Chat</h2>
-                </div>
-                <ChatInterface 
-                  isFullWidth={true} 
-                  kundaliInsights={kundaliInsights || {}}
-                />
               </div>
             </div>
-          </div>
-        </SidebarProvider>
+          </SidebarProvider>
+        </div>
       )}
     </AppLayout>
   );

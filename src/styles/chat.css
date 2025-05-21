@@ -82,6 +82,7 @@ div[data-sidebar="sidebar"] {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  z-index: 20;
 }
 
 /* Ensure chat interface takes full height */
@@ -90,4 +91,9 @@ div[data-sidebar="content"] {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+}
+
+/* Override sidebar left positioning to ensure it slides from left */
+div[data-side="left"] {
+  left: 0 !important;
 }
