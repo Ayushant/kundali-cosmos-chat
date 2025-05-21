@@ -21,6 +21,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Define the KundaliData interface to match what is returned from calculateKundali
 interface KundaliData {
@@ -46,20 +47,8 @@ const KundaliChatPage: React.FC = () => {
   const [isCalculating, setIsCalculating] = useState(true);
   const { toast } = useToast();
 
-  // Mobile responsive state
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-
-  // Add resize listener for mobile responsiveness
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initial check
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Use the hook instead of managing state manually
+  const isMobile = useIsMobile();
 
   // Extract relevant data from the kundali chart for the chat
   useEffect(() => {
@@ -99,48 +88,54 @@ const KundaliChatPage: React.FC = () => {
   return (
     <AppLayout>
       {isMobile ? (
-        // Mobile view with drawer sliding from left
-        <div className="container mx-auto px-2 w-full h-full">
-          <div className="flex flex-col w-full h-full">
-            <Drawer direction="left">
-              <DrawerTrigger asChild>
-                <Button 
-                  variant="outline"
-                  className="mb-4 border-orange-300 text-orange-600 hover:bg-orange-50 w-full"
-                >
-                  <ChevronRight size={16} className="mr-2" />
-                  View Your Kundali Chart
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent className="max-h-[90vh] overflow-y-auto left-0 right-auto">
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
+        // Mobile view with improved drawer sliding from left
+        <div className="container mx-auto px-2 w-full h-full flex flex-col">
+          <Drawer direction="left">
+            <DrawerTrigger asChild>
+              <Button 
+                variant="outline"
+                className="mb-4 border-orange-300 text-orange-600 hover:bg-orange-50 w-full"
+              >
+                <ChevronRight size={16} className="mr-2" />
+                View Your Kundali Chart
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent className="max-h-[85vh] overflow-y-auto left-0 right-auto w-[90vw] p-0">
+              <div className="p-4 relative">
+                <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
+                <div className="kundali-chart-container overflow-auto pb-12">
                   <KundaliChart 
                     birthDetails={birthDetails} 
                     kundaliData={kundaliInsights || undefined} 
                     isLoading={isCalculating}
                   />
                 </div>
-                <DrawerClose className="absolute top-4 right-4" />
-              </DrawerContent>
-            </Drawer>
-            
-            {/* Chat interface centered on mobile */}
-            <div className="w-full mt-2 flex-1 overflow-y-auto">
-              <ChatInterface 
-                isFullWidth={true} 
-                kundaliInsights={kundaliInsights || {}}
-              />
-            </div>
+                <DrawerClose className="absolute top-4 right-4">
+                  <ChevronLeft className="h-5 w-5" />
+                </DrawerClose>
+              </div>
+            </DrawerContent>
+          </Drawer>
+          
+          {/* Chat interface centered on mobile */}
+          <div className="w-full mt-2 flex-1 overflow-y-auto bg-white/30 rounded-lg">
+            <ChatInterface 
+              isFullWidth={true} 
+              kundaliInsights={kundaliInsights || {}}
+            />
           </div>
         </div>
       ) : (
-        // Desktop view with sidebar
-        <div className="w-full h-[calc(100vh-8rem)] flex">
+        // Desktop view with improved sidebar
+        <div className="w-full h-[calc(100vh-8rem)] flex overflow-hidden">
           <SidebarProvider defaultOpen={true}>
             <div className="flex w-full h-full">
-              <Sidebar side="left" className="kundali-sidebar sidebar-shadow sidebar-transition" collapsible="offcanvas">
-                <SidebarContent className="p-4 w-80 sidebar-content">
+              <Sidebar 
+                side="left" 
+                className="kundali-sidebar sidebar-shadow sidebar-transition" 
+                collapsible="offcanvas"
+              >
+                <SidebarContent className="p-4 w-[320px] sidebar-content">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-orange-700">Your Kundali Chart</h2>
                     <SidebarTrigger className="ml-2">
@@ -148,7 +143,7 @@ const KundaliChatPage: React.FC = () => {
                       <span className="sr-only">Hide Kundali Chart</span>
                     </SidebarTrigger>
                   </div>
-                  <div className="overflow-y-auto flex-1">
+                  <div className="kundali-chart-container overflow-y-auto h-full pb-4">
                     <KundaliChart 
                       birthDetails={birthDetails} 
                       kundaliData={kundaliInsights || undefined} 
@@ -167,10 +162,12 @@ const KundaliChatPage: React.FC = () => {
                     </SidebarTrigger>
                     <h2 className="text-xl font-semibold text-orange-700">Astrological Insights Chat</h2>
                   </div>
-                  <ChatInterface 
-                    isFullWidth={true} 
-                    kundaliInsights={kundaliInsights || {}}
-                  />
+                  <div className="flex-1 overflow-y-auto bg-white/30 rounded-lg">
+                    <ChatInterface 
+                      isFullWidth={true} 
+                      kundaliInsights={kundaliInsights || {}}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
