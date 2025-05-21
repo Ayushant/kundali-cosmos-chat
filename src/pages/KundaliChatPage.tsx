@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AppLayout from '@/components/layout/app-layout';
@@ -56,9 +55,15 @@ const KundaliChatPage: React.FC = () => {
   const [isCalculating, setIsCalculating] = useState(true);
   const [activeTab, setActiveTab] = useState<'chart' | 'info'>('chart');
   const { toast } = useToast();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Use the hook instead of managing state manually
   const isMobile = useIsMobile();
+
+  // Toggle sidebar function for web view
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   // Extract relevant data from the kundali chart for the chat
   useEffect(() => {
@@ -164,22 +169,22 @@ const KundaliChatPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        // Desktop view with improved sidebar and scroll area for chart
+        // Desktop view with improved sliding sidebar
         <div className="w-full h-[calc(100vh-8rem)] flex overflow-hidden">
-          <SidebarProvider defaultOpen={true}>
+          <SidebarProvider defaultOpen={isSidebarOpen}>
             <div className="flex w-full h-full">
               <Sidebar 
                 side="left" 
-                className="kundali-sidebar sidebar-shadow sidebar-transition" 
+                className={`kundali-sidebar sidebar-shadow sidebar-transition ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
                 collapsible="offcanvas"
               >
                 <SidebarContent className="p-4 w-[350px]">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-orange-700">Your Kundali Chart</h2>
-                    <SidebarTrigger className="ml-2">
+                    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-2">
                       <ChevronLeft className="h-5 w-5" />
                       <span className="sr-only">Hide Kundali Chart</span>
-                    </SidebarTrigger>
+                    </Button>
                   </div>
                   <div className="flex space-x-2 mb-4">
                     <Button 
@@ -216,13 +221,24 @@ const KundaliChatPage: React.FC = () => {
                 </SidebarContent>
               </Sidebar>
               
-              <div className="flex-1 p-4 overflow-y-auto flex flex-col">
+              <div 
+                className={`flex-1 p-4 overflow-y-auto flex flex-col transition-all duration-300 ease-in-out ${
+                  isSidebarOpen ? 'ml-0' : 'ml-0'
+                }`}
+              >
                 <div className="w-full max-w-3xl mx-auto flex-1 flex flex-col">
                   <div className="flex items-center mb-4">
-                    <SidebarTrigger className="mr-2">
-                      <ChevronRight className="h-5 w-5" />
-                      <span className="sr-only">Show Kundali Chart</span>
-                    </SidebarTrigger>
+                    {!isSidebarOpen && (
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={toggleSidebar}
+                        className="mr-2 border-orange-300 text-orange-600 hover:bg-orange-50"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                        <span className="sr-only">Show Kundali Chart</span>
+                      </Button>
+                    )}
                     <h2 className="text-xl font-semibold text-orange-700">Astrological Insights Chat</h2>
                   </div>
                   <div className="flex-1 overflow-y-auto bg-white/30 rounded-lg">
