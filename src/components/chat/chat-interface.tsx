@@ -182,9 +182,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
   // Function to determine if the chat should show detailed interface elements
   const hasKundaliData = Object.keys(kundaliInsights).length > 0;
 
-  return (
-    <div className={`flex flex-col ${isFullWidth ? 'h-[calc(100vh-160px)]' : 'h-[70vh]'} bg-gradient-to-b from-orange-50 to-white backdrop-blur-md rounded-xl shadow-lg overflow-hidden border border-orange-100`}>
-      <div className="chat-header bg-gradient-to-r from-orange-500 to-red-600 p-4 text-white">
+  return (    <div className={`flex flex-col ${isFullWidth ? 'h-[calc(100vh-160px)]' : 'h-[70vh]'} bg-gradient-to-b from-orange-50 to-white backdrop-blur-md rounded-xl shadow-lg border border-orange-100`}>
+      <div className="chat-header flex-none bg-gradient-to-r from-orange-500 to-red-600 p-4 text-white flex justify-between items-start">
         <div>
           <h2 className="text-xl font-semibold">Kundali Chat Assistant</h2>
           <p className="text-sm opacity-80">Ask questions about your astrological chart</p>
@@ -237,19 +236,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
         
         <div ref={messagesEndRef} />
       </div>
-      
-      <div className="mt-2 px-4">
+        <div className="mt-2 px-2 sm:px-4">
         {hasKundaliData && (
-          <div className="flex flex-wrap gap-2 mb-2 justify-center">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 mb-2 justify-center">
             {sampleQuestions[language].map((question, index) => (
               <Button 
                 key={index}
                 variant="outline"
                 size="sm"
-                className="text-xs bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700"
+                className="text-[10px] sm:text-xs bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700 h-auto py-1 px-2 sm:py-2 sm:px-3 w-full sm:w-auto"
                 onClick={() => handleSampleQuestion(question)}
               >
-                {question.length > 30 ? question.substring(0, 30) + '...' : question}
+                {question.length > 20 ? question.substring(0, 20) + '...' : question}
               </Button>
             ))}
           </div>

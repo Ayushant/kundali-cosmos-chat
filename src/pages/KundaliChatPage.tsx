@@ -14,13 +14,6 @@ import {
   DrawerTrigger,
   DrawerClose
 } from "@/components/ui/drawer";
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarContent,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { enhanceKundaliWithPreciseCalculations } from '@/utils/indian-zodiac';
@@ -53,17 +46,9 @@ const KundaliChatPage: React.FC = () => {
   const birthDetails = location.state?.birthDetails;
   const [kundaliInsights, setKundaliInsights] = useState<KundaliData | null>(null);
   const [isCalculating, setIsCalculating] = useState(true);
-  const [activeTab, setActiveTab] = useState<'chart' | 'info'>('chart');
+  // Removed tab state since we no longer need it
   const { toast } = useToast();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  // Use the hook instead of managing state manually
   const isMobile = useIsMobile();
-
-  // Toggle sidebar function for web view
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
   // Extract relevant data from the kundali chart for the chat
   useEffect(() => {
@@ -106,153 +91,43 @@ const KundaliChatPage: React.FC = () => {
 
   return (
     <AppLayout>
-      {isMobile ? (
-        // Mobile view with improved drawer sliding from left and ensuring scrollability
-        <div className="container mx-auto px-2 w-full h-full flex flex-col">
-          <Drawer direction="left">
-            <DrawerTrigger asChild>
-              <Button 
-                variant="outline"
-                className="mb-4 border-orange-300 text-orange-600 hover:bg-orange-50 w-full"
-              >
-                <ChevronRight size={16} className="mr-2" />
-                View Your Kundali Chart
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent className="left-0 right-auto w-[95vw] p-0 h-[85vh] max-w-md">
-              <div className="h-full overflow-auto p-4 relative">
-                <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
-                <div className="flex space-x-2 mb-4">
-                  <Button 
-                    variant={activeTab === 'chart' ? "default" : "outline"} 
-                    className={activeTab === 'chart' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
-                    onClick={() => setActiveTab('chart')}
-                  >
-                    Chart View
-                  </Button>
-                  <Button 
-                    variant={activeTab === 'info' ? "default" : "outline"} 
-                    className={activeTab === 'info' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
-                    onClick={() => setActiveTab('info')}
-                  >
-                    Sign Details
-                  </Button>
-                </div>
-                <div className="h-[calc(100%-100px)] w-full overflow-auto pb-4">
-                  {activeTab === 'chart' ? (
-                    <KundaliChart 
-                      birthDetails={birthDetails} 
-                      kundaliData={kundaliInsights || undefined} 
-                      isLoading={isCalculating}
-                    />
-                  ) : (
-                    <ZodiacInfo 
-                      solarSign={kundaliInsights?.enhancedSolarSign}
-                      moonSign={kundaliInsights?.moonSign}
-                      nakshatra={kundaliInsights?.planets?.find(p => p.name === "Moon")?.nakshatra}
-                    />
-                  )}
-                </div>
-                <DrawerClose className="absolute top-4 right-4">
-                  <ChevronLeft className="h-5 w-5" />
-                </DrawerClose>
+      <div className="w-full flex-1 flex flex-col max-h-full overflow-hidden">
+        <Drawer direction="left">
+          <DrawerTrigger asChild>
+            <Button 
+              variant="outline"
+              className="mb-4 mx-2 border-orange-300 text-orange-600 hover:bg-orange-50 w-[calc(100%-1rem)]"
+            >
+              <ChevronRight size={16} className="mr-2" />
+              View Your Kundali Chart
+            </Button>
+          </DrawerTrigger>          <DrawerContent className={`left-0 right-auto ${isMobile ? 'w-[95vw] h-[85vh] max-w-md' : 'w-[450px] h-[95vh]'} p-0`}>
+            <div className="flex flex-col h-full">
+              <div className="flex-none p-4">                <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
               </div>
-            </DrawerContent>
-          </Drawer>
-          
-          {/* Chat interface centered on mobile */}
-          <div className="w-full mt-2 flex-1 overflow-y-auto bg-white/30 rounded-lg">
-            <ChatInterface 
-              isFullWidth={true} 
-              kundaliInsights={kundaliInsights || {}}
-            />
+              <div className="flex-1 overflow-y-auto px-4">
+                <KundaliChart 
+                  birthDetails={birthDetails} 
+                  kundaliData={kundaliInsights || undefined} 
+                  isLoading={isCalculating}
+                />
+              </div>
+              <DrawerClose className="absolute top-4 right-4">
+                <ChevronLeft className="h-5 w-5" />
+              </DrawerClose>
+            </div>
+          </DrawerContent>
+        </Drawer>        <div className="flex-1 rounded-lg mx-2">
+          <div className="w-full max-w-3xl mx-auto h-full flex flex-col">
+            <div className="flex-1">
+              <ChatInterface 
+                isFullWidth={true} 
+                kundaliInsights={kundaliInsights || {}}
+              />
+            </div>
           </div>
         </div>
-      ) : (
-        // Desktop view with improved sliding sidebar
-        <div className="w-full h-[calc(100vh-8rem)] flex overflow-hidden">
-          <SidebarProvider defaultOpen={isSidebarOpen}>
-            <div className="flex w-full h-full">
-              <Sidebar 
-                side="left" 
-                className={`kundali-sidebar sidebar-shadow sidebar-transition ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-                collapsible="offcanvas"
-              >
-                <SidebarContent className="p-4 w-[350px]">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-orange-700">Your Kundali Chart</h2>
-                    <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-2">
-                      <ChevronLeft className="h-5 w-5" />
-                      <span className="sr-only">Hide Kundali Chart</span>
-                    </Button>
-                  </div>
-                  <div className="flex space-x-2 mb-4">
-                    <Button 
-                      variant={activeTab === 'chart' ? "default" : "outline"} 
-                      className={activeTab === 'chart' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
-                      onClick={() => setActiveTab('chart')}
-                    >
-                      Chart View
-                    </Button>
-                    <Button 
-                      variant={activeTab === 'info' ? "default" : "outline"} 
-                      className={activeTab === 'info' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
-                      onClick={() => setActiveTab('info')}
-                    >
-                      Sign Details
-                    </Button>
-                  </div>
-                  <ScrollArea className="h-[calc(100vh-12rem)]">
-                    {activeTab === 'chart' ? (
-                      <KundaliChart 
-                        birthDetails={birthDetails} 
-                        kundaliData={kundaliInsights || undefined} 
-                        isLoading={isCalculating}
-                      />
-                    ) : (
-                      <ZodiacInfo 
-                        solarSign={kundaliInsights?.enhancedSolarSign}
-                        moonSign={kundaliInsights?.moonSign}
-                        nakshatra={kundaliInsights?.planets?.find(p => p.name === "Moon")?.nakshatra}
-                        className="pb-6"
-                      />
-                    )}
-                  </ScrollArea>
-                </SidebarContent>
-              </Sidebar>
-              
-              <div 
-                className={`flex-1 p-4 overflow-y-auto flex flex-col transition-all duration-300 ease-in-out ${
-                  isSidebarOpen ? 'ml-0' : 'ml-0'
-                }`}
-              >
-                <div className="w-full max-w-3xl mx-auto flex-1 flex flex-col">
-                  <div className="flex items-center mb-4">
-                    {!isSidebarOpen && (
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        onClick={toggleSidebar}
-                        className="mr-2 border-orange-300 text-orange-600 hover:bg-orange-50"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                        <span className="sr-only">Show Kundali Chart</span>
-                      </Button>
-                    )}
-                    <h2 className="text-xl font-semibold text-orange-700">Astrological Insights Chat</h2>
-                  </div>
-                  <div className="flex-1 overflow-y-auto bg-white/30 rounded-lg">
-                    <ChatInterface 
-                      isFullWidth={true} 
-                      kundaliInsights={kundaliInsights || {}}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SidebarProvider>
-        </div>
-      )}
+      </div>
     </AppLayout>
   );
 };

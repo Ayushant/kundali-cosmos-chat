@@ -131,6 +131,10 @@ div[data-side="left"] {
   right: auto !important;
   height: 85vh !important;
   overflow-y: auto !important;
+  transition: transform 0.3s ease-in-out !important;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 /* Ensure drawer content is scrollable */
