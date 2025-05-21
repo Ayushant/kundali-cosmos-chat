@@ -20,6 +20,7 @@ import {
   SidebarContent,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -88,7 +89,7 @@ const KundaliChatPage: React.FC = () => {
   return (
     <AppLayout>
       {isMobile ? (
-        // Mobile view with improved drawer sliding from left
+        // Mobile view with improved drawer sliding from left and ensuring scrollability
         <div className="container mx-auto px-2 w-full h-full flex flex-col">
           <Drawer direction="left">
             <DrawerTrigger asChild>
@@ -100,20 +101,22 @@ const KundaliChatPage: React.FC = () => {
                 View Your Kundali Chart
               </Button>
             </DrawerTrigger>
-            <DrawerContent className="max-h-[85vh] overflow-y-auto left-0 right-auto w-[90vw] p-0">
-              <div className="p-4 relative">
-                <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
-                <div className="kundali-chart-container overflow-auto pb-12">
-                  <KundaliChart 
-                    birthDetails={birthDetails} 
-                    kundaliData={kundaliInsights || undefined} 
-                    isLoading={isCalculating}
-                  />
+            <DrawerContent className="left-0 right-auto w-[90vw] p-0 h-[85vh]">
+              <ScrollArea className="h-[85vh] w-full p-4">
+                <div className="p-4 relative">
+                  <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
+                  <div className="kundali-chart-container h-full w-full">
+                    <KundaliChart 
+                      birthDetails={birthDetails} 
+                      kundaliData={kundaliInsights || undefined} 
+                      isLoading={isCalculating}
+                    />
+                  </div>
+                  <DrawerClose className="absolute top-4 right-4">
+                    <ChevronLeft className="h-5 w-5" />
+                  </DrawerClose>
                 </div>
-                <DrawerClose className="absolute top-4 right-4">
-                  <ChevronLeft className="h-5 w-5" />
-                </DrawerClose>
-              </div>
+              </ScrollArea>
             </DrawerContent>
           </Drawer>
           
@@ -126,7 +129,7 @@ const KundaliChatPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        // Desktop view with improved sidebar
+        // Desktop view with improved sidebar and scroll area for chart
         <div className="w-full h-[calc(100vh-8rem)] flex overflow-hidden">
           <SidebarProvider defaultOpen={true}>
             <div className="flex w-full h-full">
@@ -135,7 +138,7 @@ const KundaliChatPage: React.FC = () => {
                 className="kundali-sidebar sidebar-shadow sidebar-transition" 
                 collapsible="offcanvas"
               >
-                <SidebarContent className="p-4 w-[320px] sidebar-content">
+                <SidebarContent className="p-4 w-[320px]">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-orange-700">Your Kundali Chart</h2>
                     <SidebarTrigger className="ml-2">
@@ -143,13 +146,15 @@ const KundaliChatPage: React.FC = () => {
                       <span className="sr-only">Hide Kundali Chart</span>
                     </SidebarTrigger>
                   </div>
-                  <div className="kundali-chart-container overflow-y-auto h-full pb-4">
-                    <KundaliChart 
-                      birthDetails={birthDetails} 
-                      kundaliData={kundaliInsights || undefined} 
-                      isLoading={isCalculating}
-                    />
-                  </div>
+                  <ScrollArea className="h-[calc(100vh-12rem)] w-full">
+                    <div className="pr-2">
+                      <KundaliChart 
+                        birthDetails={birthDetails} 
+                        kundaliData={kundaliInsights || undefined} 
+                        isLoading={isCalculating}
+                      />
+                    </div>
+                  </ScrollArea>
                 </SidebarContent>
               </Sidebar>
               
