@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import AppLayout from '@/components/layout/app-layout';
 import KundaliChart from '@/components/kundali/kundali-chart';
 import ChatInterface from '@/components/chat/chat-interface';
+import ZodiacInfo from '@/components/kundali/zodiac-info';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { calculateKundali } from '@/utils/kundali-calculator';
 import { useToast } from '@/hooks/use-toast';
@@ -53,6 +54,7 @@ const KundaliChatPage: React.FC = () => {
   const birthDetails = location.state?.birthDetails;
   const [kundaliInsights, setKundaliInsights] = useState<KundaliData | null>(null);
   const [isCalculating, setIsCalculating] = useState(true);
+  const [activeTab, setActiveTab] = useState<'chart' | 'info'>('chart');
   const { toast } = useToast();
 
   // Use the hook instead of managing state manually
@@ -112,15 +114,39 @@ const KundaliChatPage: React.FC = () => {
                 View Your Kundali Chart
               </Button>
             </DrawerTrigger>
-            <DrawerContent className="left-0 right-auto w-[90vw] p-0 h-[85vh]">
+            <DrawerContent className="left-0 right-auto w-[95vw] p-0 h-[85vh] max-w-md">
               <div className="h-full overflow-auto p-4 relative">
                 <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
-                <div className="h-[calc(100%-60px)] w-full overflow-auto pb-4">
-                  <KundaliChart 
-                    birthDetails={birthDetails} 
-                    kundaliData={kundaliInsights || undefined} 
-                    isLoading={isCalculating}
-                  />
+                <div className="flex space-x-2 mb-4">
+                  <Button 
+                    variant={activeTab === 'chart' ? "default" : "outline"} 
+                    className={activeTab === 'chart' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
+                    onClick={() => setActiveTab('chart')}
+                  >
+                    Chart View
+                  </Button>
+                  <Button 
+                    variant={activeTab === 'info' ? "default" : "outline"} 
+                    className={activeTab === 'info' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
+                    onClick={() => setActiveTab('info')}
+                  >
+                    Sign Details
+                  </Button>
+                </div>
+                <div className="h-[calc(100%-100px)] w-full overflow-auto pb-4">
+                  {activeTab === 'chart' ? (
+                    <KundaliChart 
+                      birthDetails={birthDetails} 
+                      kundaliData={kundaliInsights || undefined} 
+                      isLoading={isCalculating}
+                    />
+                  ) : (
+                    <ZodiacInfo 
+                      solarSign={kundaliInsights?.enhancedSolarSign}
+                      moonSign={kundaliInsights?.moonSign}
+                      nakshatra={kundaliInsights?.planets?.find(p => p.name === "Moon")?.nakshatra}
+                    />
+                  )}
                 </div>
                 <DrawerClose className="absolute top-4 right-4">
                   <ChevronLeft className="h-5 w-5" />
@@ -155,13 +181,38 @@ const KundaliChatPage: React.FC = () => {
                       <span className="sr-only">Hide Kundali Chart</span>
                     </SidebarTrigger>
                   </div>
-                  <div className="h-[calc(100vh-12rem)] overflow-auto">
-                    <KundaliChart 
-                      birthDetails={birthDetails} 
-                      kundaliData={kundaliInsights || undefined} 
-                      isLoading={isCalculating}
-                    />
+                  <div className="flex space-x-2 mb-4">
+                    <Button 
+                      variant={activeTab === 'chart' ? "default" : "outline"} 
+                      className={activeTab === 'chart' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
+                      onClick={() => setActiveTab('chart')}
+                    >
+                      Chart View
+                    </Button>
+                    <Button 
+                      variant={activeTab === 'info' ? "default" : "outline"} 
+                      className={activeTab === 'info' ? "bg-orange-600" : "border-orange-300 text-orange-600"} 
+                      onClick={() => setActiveTab('info')}
+                    >
+                      Sign Details
+                    </Button>
                   </div>
+                  <ScrollArea className="h-[calc(100vh-12rem)]">
+                    {activeTab === 'chart' ? (
+                      <KundaliChart 
+                        birthDetails={birthDetails} 
+                        kundaliData={kundaliInsights || undefined} 
+                        isLoading={isCalculating}
+                      />
+                    ) : (
+                      <ZodiacInfo 
+                        solarSign={kundaliInsights?.enhancedSolarSign}
+                        moonSign={kundaliInsights?.moonSign}
+                        nakshatra={kundaliInsights?.planets?.find(p => p.name === "Moon")?.nakshatra}
+                        className="pb-6"
+                      />
+                    )}
+                  </ScrollArea>
                 </SidebarContent>
               </Sidebar>
               
