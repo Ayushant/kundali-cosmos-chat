@@ -23,6 +23,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { enhanceKundaliWithPreciseCalculations } from '@/utils/indian-zodiac';
 
 // Define the KundaliData interface to match what is returned from calculateKundali
 interface KundaliData {
@@ -39,6 +40,12 @@ interface KundaliData {
   }>;
   strongHouses: number[];
   weakHouses: number[];
+  enhancedSolarSign?: {
+    sanskrit: string;
+    english: string;
+    element: string;
+    ruler: string;
+  };
 }
 
 const KundaliChatPage: React.FC = () => {
@@ -58,7 +65,11 @@ const KundaliChatPage: React.FC = () => {
       try {
         // Calculate Kundali using our algorithm
         const kundaliData = calculateKundali(birthDetails);
-        setKundaliInsights(kundaliData);
+        
+        // Enhance with more precise calculations if available
+        const enhancedData = enhanceKundaliWithPreciseCalculations(kundaliData, birthDetails);
+        
+        setKundaliInsights(enhancedData);
         toast({
           title: "Kundali Chart Generated",
           description: "Your astrological chart has been calculated successfully.",
