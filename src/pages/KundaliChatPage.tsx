@@ -112,7 +112,7 @@ const KundaliChatPage: React.FC = () => {
                   View Your Kundali Chart
                 </Button>
               </DrawerTrigger>
-              <DrawerContent side="left" className="max-h-[90vh] overflow-y-auto">
+              <DrawerContent className="max-h-[90vh] overflow-y-auto left-0 right-auto">
                 <div className="p-4">
                   <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
                   <KundaliChart 
