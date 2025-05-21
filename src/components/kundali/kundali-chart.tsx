@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Calendar, Clock, MapPin, Loader2 } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -38,8 +39,8 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, 
   }
 
   return (
-    <ScrollArea className="h-full w-full">
-      <div className="bg-gradient-to-br from-orange-50 to-white backdrop-blur-sm rounded-xl shadow-lg p-3 sm:p-4 overflow-visible">
+    <div className="w-full h-full overflow-auto">
+      <div className="bg-gradient-to-br from-orange-50 to-white backdrop-blur-sm rounded-xl shadow-lg p-3 sm:p-4">
         <div className="text-center mb-3 sm:mb-4">
           <h3 className="text-lg sm:text-xl font-semibold text-orange-600">Your Kundali Chart</h3>
           {birthDetails && (
@@ -66,9 +67,9 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, 
           )}
         </div>
         
-        <div className="kundali-visualization mb-3 sm:mb-4 w-full">
+        <div className="mb-3 sm:mb-4 w-full">
           {/* North Indian style Kundali chart (square format) - Ensuring full visibility */}
-          <div className="aspect-square border-2 border-orange-500 rounded-lg relative w-full max-w-[400px] mx-auto">
+          <div className="aspect-square border-2 border-orange-500 rounded-lg relative w-full max-w-[350px] mx-auto">
             {/* Central diamond */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-[70%] h-[70%] border-2 border-orange-400 rotate-45"></div>
@@ -202,9 +203,9 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, 
           <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-2 sm:p-3 rounded-lg">
             <h4 className="font-semibold text-orange-800">Current Dasha</h4>
             <div className="flex flex-col gap-1 mt-1">
-              <span className="truncate">{kundaliData?.currentDasha.split("(")[0]}</span>
+              <span className="truncate">{kundaliData?.currentDasha?.split("(")[0]}</span>
               <span className="text-[10px] sm:text-xs text-orange-700 truncate">
-                {kundaliData?.currentDasha.includes("(") ? 
+                {kundaliData?.currentDasha?.includes("(") ? 
                   `(${kundaliData.currentDasha.split("(")[1]}` : 
                   "(2020-2036)"}
               </span>
@@ -215,18 +216,18 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, 
             <div className="flex flex-col gap-1 mt-1">
               <span className="truncate">{kundaliData?.ascendant}</span>
               <span className="text-[10px] sm:text-xs text-orange-700 truncate">Ruled by {
-                kundaliData?.ascendant.includes("Leo") ? "Sun" : 
-                kundaliData?.ascendant.includes("Cancer") ? "Moon" :
-                kundaliData?.ascendant.includes("Aries") ? "Mars" : "Venus"
+                kundaliData?.ascendant?.includes("Leo") ? "Sun" : 
+                kundaliData?.ascendant?.includes("Cancer") ? "Moon" :
+                kundaliData?.ascendant?.includes("Aries") ? "Mars" : "Venus"
               }</span>
             </div>
           </div>
           <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-2 sm:p-3 rounded-lg">
             <h4 className="font-semibold text-orange-800">Moon Sign</h4>
             <div className="flex flex-col gap-1 mt-1">
-              <span className="truncate">{kundaliData?.moonSign.split("-")[0]}</span>
+              <span className="truncate">{kundaliData?.moonSign?.split("-")[0]}</span>
               <span className="text-[10px] sm:text-xs text-orange-700 truncate">{
-                kundaliData?.moonSign.includes("-") ? 
+                kundaliData?.moonSign?.includes("-") ? 
                   kundaliData.moonSign.split("-")[1].trim() : 
                   "Rohini Nakshatra"
               }</span>
@@ -235,9 +236,9 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, 
           <div className="bg-gradient-to-br from-orange-100 to-orange-50 p-2 sm:p-3 rounded-lg">
             <h4 className="font-semibold text-orange-800">Sun Sign</h4>
             <div className="flex flex-col gap-1 mt-1">
-              <span className="truncate">{kundaliData?.sunSign.split("-")[0]}</span>
+              <span className="truncate">{kundaliData?.sunSign?.split("-")[0]}</span>
               <span className="text-[10px] sm:text-xs text-orange-700 truncate">{
-                kundaliData?.sunSign.includes("-") ? 
+                kundaliData?.sunSign?.includes("-") ? 
                   kundaliData.sunSign.split("-")[1].trim() : 
                   "Mrigashira Nakshatra"
               }</span>
@@ -253,18 +254,18 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, 
                 <th className="px-1 sm:px-2 py-1 text-left text-orange-800 whitespace-nowrap">Planet</th>
                 <th className="px-1 sm:px-2 py-1 text-left text-orange-800 whitespace-nowrap">Sign</th>
                 <th className="px-1 sm:px-2 py-1 text-left text-orange-800 whitespace-nowrap">House</th>
-                {kundaliData?.planets.some(p => p.degree !== undefined) && (
+                {kundaliData?.planets?.some(p => p.degree !== undefined) && (
                   <th className="px-1 sm:px-2 py-1 text-left text-orange-800 whitespace-nowrap">Degree</th>
                 )}
               </tr>
             </thead>
             <tbody className="divide-y divide-orange-100">
-              {kundaliData?.planets.map((planet, index) => (
+              {kundaliData?.planets?.map((planet, index) => (
                 <tr key={index}>
                   <td className="px-1 sm:px-2 py-1 whitespace-nowrap">{planet.name}</td>
                   <td className="px-1 sm:px-2 py-1">{planet.sign}</td>
                   <td className="px-1 sm:px-2 py-1">{planet.house}</td>
-                  {kundaliData?.planets.some(p => p.degree !== undefined) && (
+                  {kundaliData?.planets?.some(p => p.degree !== undefined) && (
                     <td className="px-1 sm:px-2 py-1">{planet.degree ? `${planet.degree}°` : '-'}</td>
                   )}
                 </tr>
@@ -279,7 +280,7 @@ const KundaliChart: React.FC<KundaliChartProps> = ({ birthDetails, kundaliData, 
           </button>
         </div>
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 

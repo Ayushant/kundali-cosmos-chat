@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { SendIcon, Loader2, Globe, HelpCircle, Star } from 'lucide-react';
+import { SendIcon, Loader2, Globe, HelpCircle } from 'lucide-react';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -184,19 +184,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
 
   return (
     <div className={`flex flex-col ${isFullWidth ? 'h-[calc(100vh-160px)]' : 'h-[70vh]'} bg-gradient-to-b from-orange-50 to-white backdrop-blur-md rounded-xl shadow-lg overflow-hidden border border-orange-100`}>
-      <div className="bg-gradient-to-r from-orange-500 to-red-600 p-4 text-white flex justify-between items-center">
+      <div className="chat-header bg-gradient-to-r from-orange-500 to-red-600 p-4 text-white">
         <div>
           <h2 className="text-xl font-semibold">Kundali Chat Assistant</h2>
           <p className="text-sm opacity-80">Ask questions about your astrological chart</p>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="bg-white/20 border-white/30 hover:bg-white/30">
+            <Button variant="outline" className="language-selector bg-white/20 border-white/30 hover:bg-white/30">
               <Globe className="mr-2 h-4 w-4" />
               {language === 'english' ? 'English' : language === 'hindi' ? 'हिंदी' : 'Hinglish'}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-white" align="end">
+          <DropdownMenuContent className="language-dropdown bg-white" align="end">
             <DropdownMenuItem onClick={() => handleChangeLanguage('english')}>
               English
             </DropdownMenuItem>
