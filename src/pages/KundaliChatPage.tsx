@@ -100,13 +100,13 @@ const KundaliChatPage: React.FC = () => {
     <AppLayout>
       {isMobile ? (
         // Mobile view with drawer
-        <div className="container mx-auto px-2">
-          <div className="flex flex-col">
+        <div className="container mx-auto px-2 w-full">
+          <div className="flex flex-col w-full">
             <Drawer>
               <DrawerTrigger asChild>
                 <Button 
                   variant="outline"
-                  className="mb-4 border-orange-300 text-orange-600 hover:bg-orange-50"
+                  className="mb-4 border-orange-300 text-orange-600 hover:bg-orange-50 w-full"
                 >
                   <ChevronRight size={16} className="mr-2" />
                   View Your Kundali Chart
@@ -136,23 +136,26 @@ const KundaliChatPage: React.FC = () => {
         </div>
       ) : (
         // Desktop view with sidebar
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex min-h-[calc(100vh-80px)]">
-            <Sidebar side="left" variant="inset" collapsible="offcanvas">
-              <SidebarContent className="p-4 w-80">
+        <SidebarProvider defaultOpen={true} className="w-full">
+          <div className="flex min-h-[calc(100vh-80px)] w-full">
+            <Sidebar side="left" className="kundali-sidebar" collapsible="offcanvas">
+              <SidebarContent className="p-4 w-80 sidebar-content">
                 <h2 className="text-xl font-semibold text-orange-700 mb-4">Your Kundali Chart</h2>
-                <KundaliChart 
-                  birthDetails={birthDetails} 
-                  kundaliData={kundaliInsights || undefined} 
-                  isLoading={isCalculating}
-                />
+                <div className="overflow-y-auto flex-grow">
+                  <KundaliChart 
+                    birthDetails={birthDetails} 
+                    kundaliData={kundaliInsights || undefined} 
+                    isLoading={isCalculating}
+                  />
+                </div>
               </SidebarContent>
             </Sidebar>
             
-            <div className="flex-1 flex items-center justify-center p-4">
+            <div className="flex-1 flex items-center justify-center p-4 overflow-y-auto">
               <div className="w-full max-w-3xl">
                 <div className="flex items-center mb-4">
                   <SidebarTrigger className="mr-2">
+                    <ChevronLeft className="h-5 w-5" />
                     <span className="sr-only">Toggle Kundali Sidebar</span>
                   </SidebarTrigger>
                   <h2 className="text-xl font-semibold text-orange-700">Astrological Insights Chat</h2>
