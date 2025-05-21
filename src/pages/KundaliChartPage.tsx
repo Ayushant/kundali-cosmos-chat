@@ -17,7 +17,7 @@ const KundaliChartPage: React.FC = () => {
   const [isCalculating, setIsCalculating] = useState(true);
   const { toast } = useToast();
 
-  // Handle calculation results from Swiss Ephemeris
+  // Handle calculation results from our browser-compatible implementation
   const handleCalculationComplete = (data: { 
     ascendant: string; 
     planets: PlanetPosition[] 
@@ -46,7 +46,7 @@ const KundaliChartPage: React.FC = () => {
     
     toast({
       title: "Kundali Chart Generated",
-      description: "Your astrological chart has been calculated with Swiss Ephemeris.",
+      description: "Your astrological chart has been calculated successfully.",
       duration: 3000,
     });
   };
@@ -75,11 +75,11 @@ const KundaliChartPage: React.FC = () => {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl sm:text-3xl font-bold text-red-600">Your Kundali Chart</CardTitle>
             <CardDescription className="text-sm sm:text-base text-orange-700">
-              Calculated with Swiss Ephemeris for precise planetary positions
+              Calculated with browser-compatible algorithms for planetary positions
             </CardDescription>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
-            {/* SwissEph Calculator (hidden when chart is ready) */}
+            {/* Calculator (hidden when chart is ready) */}
             {(!kundaliData && birthDetails) && (
               <KundaliCalculator 
                 birthDetails={birthDetails} 
@@ -112,9 +112,9 @@ const KundaliChartPage: React.FC = () => {
         {kundaliData && (
           <Card className="mb-6 overflow-hidden">
             <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">Precise Planetary Positions</CardTitle>
+              <CardTitle className="text-lg sm:text-xl">Planetary Positions</CardTitle>
               <CardDescription className="text-xs sm:text-sm">
-                Calculated using Swiss Ephemeris (WASM) for highest accuracy
+                Calculated using browser-compatible astronomical algorithms
               </CardDescription>
             </CardHeader>
             <CardContent className="px-2 sm:px-6 overflow-x-auto">

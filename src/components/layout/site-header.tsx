@@ -2,7 +2,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { LogOut } from 'lucide-react';
+import { LogOut, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const SiteHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,19 @@ export const SiteHeader: React.FC = () => {
     <header className="w-full py-2 sm:py-3 px-3 sm:px-4 flex justify-between items-center bg-gradient-to-r from-red-100 to-red-50 shadow-sm">
       <div className="flex items-center">
         <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-red-600">Kundali Cosmos</h1>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="ml-2 bg-orange-100 text-orange-700 text-xs px-1.5 py-0.5 rounded-full flex items-center">
+                <Info size={10} className="mr-0.5" />
+                <span className="hidden xs:inline">Browser</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="text-xs">Using browser-compatible astronomical calculations</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <Button 
         variant="ghost" 

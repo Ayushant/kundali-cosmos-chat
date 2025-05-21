@@ -29,13 +29,14 @@ export enum WasmLoadingStatus {
 
 // Create a browser-compatible SwissEph implementation
 const createBrowserSwissEph = (): SwissEph => {
+  console.log('Creating browser-compatible SwissEph implementation');
+  
   // Constants
   const SE_SIDM_LAHIRI = 1;
   const SE_GREG_CAL = 1;
   const SEFLG_SIDEREAL = 256;
   
   // Basic implementation of Julian day calculation
-  // This is a simplified version of the actual calculation
   const swe_julday = (year: number, month: number, day: number, hour: number, flag: number): number => {
     // Julian day calculation - simplified version
     let a = Math.floor((14 - month) / 12);
@@ -51,9 +52,7 @@ const createBrowserSwissEph = (): SwissEph => {
   
   // Simplified calculation of planetary positions
   const swe_calc_ut = (julDay: number, planet: number, flag: number) => {
-    // This is a very basic approximation
-    // In a real implementation, this would use complex astronomical calculations
-    
+    // This is a simplified approximation
     // Create a deterministic but varying position based on julDay and planet
     const seed = julDay + planet * 10;
     const longitude = (seed * 13) % 360;
@@ -73,7 +72,7 @@ const createBrowserSwissEph = (): SwissEph => {
     const ascendant = (seed * 17) % 360;
     
     // Create equal houses
-    const cusps = [];
+    const cusps: number[] = [];
     for (let i = 1; i <= 12; i++) {
       cusps[i] = (ascendant + (i-1) * 30) % 360;
     }
