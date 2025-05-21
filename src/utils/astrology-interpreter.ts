@@ -62,63 +62,63 @@ const houseMeanings: Record<number, string[]> = {
 const signQualities: Record<string, Record<string, string[]>> = {
   'Aries': {
     keywords: ['initiative', 'courage', 'impulsive', 'leadership', 'pioneering', 'energetic'],
-    element: 'fire',
-    modality: 'cardinal'
+    element: ['fire'],
+    modality: ['cardinal']
   },
   'Taurus': {
     keywords: ['stability', 'sensuality', 'patience', 'determination', 'practical', 'reliable'],
-    element: 'earth',
-    modality: 'fixed'
+    element: ['earth'],
+    modality: ['fixed']
   },
   'Gemini': {
     keywords: ['communication', 'versatility', 'curiosity', 'adaptability', 'intellect', 'social'],
-    element: 'air',
-    modality: 'mutable'
+    element: ['air'],
+    modality: ['mutable']
   },
   'Cancer': {
     keywords: ['nurturing', 'emotional', 'protective', 'intuitive', 'security-oriented', 'sensitive'],
-    element: 'water',
-    modality: 'cardinal'
+    element: ['water'],
+    modality: ['cardinal']
   },
   'Leo': {
     keywords: ['creative', 'proud', 'theatrical', 'warm-hearted', 'generous', 'dignified'],
-    element: 'fire',
-    modality: 'fixed'
+    element: ['fire'],
+    modality: ['fixed']
   },
   'Virgo': {
     keywords: ['analytical', 'practical', 'detailed', 'perfectionist', 'discriminating', 'service-oriented'],
-    element: 'earth',
-    modality: 'mutable'
+    element: ['earth'],
+    modality: ['mutable']
   },
   'Libra': {
     keywords: ['diplomatic', 'harmonious', 'partnership-oriented', 'fair', 'aesthetic', 'balanced'],
-    element: 'air',
-    modality: 'cardinal'
+    element: ['air'],
+    modality: ['cardinal']
   },
   'Scorpio': {
     keywords: ['intense', 'passionate', 'secretive', 'transformative', 'investigative', 'powerful'],
-    element: 'water',
-    modality: 'fixed'
+    element: ['water'],
+    modality: ['fixed']
   },
   'Sagittarius': {
     keywords: ['philosophical', 'adventurous', 'optimistic', 'freedom-loving', 'expansive', 'honest'],
-    element: 'fire',
-    modality: 'mutable'
+    element: ['fire'],
+    modality: ['mutable']
   },
   'Capricorn': {
     keywords: ['ambitious', 'disciplined', 'responsible', 'cautious', 'practical', 'authoritative'],
-    element: 'earth',
-    modality: 'cardinal'
+    element: ['earth'],
+    modality: ['cardinal']
   },
   'Aquarius': {
     keywords: ['innovative', 'humanitarian', 'independent', 'intellectual', 'unique', 'progressive'],
-    element: 'air',
-    modality: 'fixed'
+    element: ['air'],
+    modality: ['fixed']
   },
   'Pisces': {
     keywords: ['compassionate', 'intuitive', 'spiritual', 'imaginative', 'sensitive', 'dreamy'],
-    element: 'water',
-    modality: 'mutable'
+    element: ['water'],
+    modality: ['mutable']
   }
 };
 
@@ -251,9 +251,8 @@ export const getPlanetaryDignity = (planet: string, sign: string): 'exalted' | '
     'Mercury': {
       'Virgo': 'exalted',
       'Gemini': 'domicile',
-      'Virgo': 'domicile',
-      'Pisces': 'fall',
-      'Sagittarius': 'detriment'
+      'Sagittarius': 'detriment',
+      'Pisces': 'fall'
     },
     'Venus': {
       'Pisces': 'exalted',
