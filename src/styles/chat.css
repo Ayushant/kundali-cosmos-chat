@@ -44,3 +44,13 @@
 .typing-indicator span:nth-child(3) {
   animation-delay: 0.4s;
 }
+
+/* Sidebar enhancements */
+.sidebar-shadow {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Transitions for smooth animations */
+.sidebar-transition {
+  transition: all 0.3s ease;
+}
