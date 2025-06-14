@@ -16,13 +16,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { generateAstrologicalResponse } from '@/utils/astrology-interpreter';
 
 interface Message {
   id: string;
   content: string;
   sender: 'user' | 'ai';
   timestamp: number;
+  isLoading?: boolean;
 }
 
 interface KundaliInsight {
@@ -48,21 +48,6 @@ interface ChatInterfaceProps {
 
 // Define the languages
 type Language = 'english' | 'hindi' | 'hinglish';
-
-// Template for kundali-aware responses
-const generateResponse = (message: string, language: Language, insights?: KundaliInsight): string => {
-  // Use our new astrology interpreter if we have insights
-  if (insights && Object.keys(insights).length > 0) {
-    return generateAstrologicalResponse(message, insights, language);
-  }
-  
-  // Default response if no insights
-  return {
-    english: "I don't have enough information about your birth chart. Please provide your birth details for more personalized insights.",
-    hindi: "मुझे आपके जन्म कुंडली के बारे में पर्याप्त जानकारी नहीं है। अधिक व्यक्तिगत अंतर्दृष्टि के लिए कृपया अपने जन्म विवरण प्रदान करें।",
-    hinglish: "Mujhe aapke birth chart ke baare mein paryapt jankari nahi hai. Adhik vyaktigat insights ke liye kripya apne birth details provide karen."
-  }[language];
-};
 
 // Greetings based on language
 const greetings: Record<Language, string> = {
@@ -104,7 +89,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
   const [language, setLanguage] = useState<Language>('english');
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -139,7 +123,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
     }
   }, [kundaliInsights, toast]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!inputMessage.trim()) return;
@@ -151,24 +135,77 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
       timestamp: Date.now(),
     };
     
+    // Add user message immediately
     setMessages(prev => [...prev, newUserMessage]);
-    setInputMessage('');
-    setIsTyping(true);
     
-    // Generate AI response based on kundali insights with variable timing for more natural feel
-    const responseTime = Math.floor(Math.random() * 1000) + 800; // 800-1800ms
-
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: generateResponse(inputMessage, language, kundaliInsights),
-        sender: 'ai',
-        timestamp: Date.now(),
-      };
+    // Add loading message
+    const loadingMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      content: '',
+      sender: 'ai',
+      timestamp: Date.now(),
+      isLoading: true,
+    };
+    
+    setMessages(prev => [...prev, loadingMessage]);
+    
+    const currentMessage = inputMessage;
+    setInputMessage('');
+    
+    try {
+      console.log('Sending message to webhook:', currentMessage);
       
-      setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, responseTime);
+      const response = await fetch('https://n8n.srv849275.hstgr.cloud/webhook/pandit-gemini', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: currentMessage }),
+        signal: AbortSignal.timeout(30000)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Webhook response:', data);
+      
+      // Extract AI response from webhook
+      const aiResponse = data.output || data.message || data || "No response received";
+      
+      // Remove loading message and add AI response
+      setMessages(prev => {
+        const filteredMessages = prev.filter(msg => msg.id !== loadingMessage.id);
+        return [...filteredMessages, {
+          id: (Date.now() + 2).toString(),
+          content: aiResponse,
+          sender: 'ai',
+          timestamp: Date.now(),
+        }];
+      });
+      
+    } catch (error) {
+      console.error('Error sending message to webhook:', error);
+      
+      // Remove loading message and add error response
+      setMessages(prev => {
+        const filteredMessages = prev.filter(msg => msg.id !== loadingMessage.id);
+        return [...filteredMessages, {
+          id: (Date.now() + 3).toString(),
+          content: "Connection failed, please try again",
+          sender: 'ai',
+          timestamp: Date.now(),
+        }];
+      });
+      
+      toast({
+        title: "Connection Error",
+        description: "Failed to connect to the AI assistant. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    }
   };
 
   const handleChangeLanguage = (newLanguage: Language) => {
@@ -182,7 +219,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
   // Function to determine if the chat should show detailed interface elements
   const hasKundaliData = Object.keys(kundaliInsights).length > 0;
 
-  return (    <div className={`flex flex-col ${isFullWidth ? 'h-[calc(100vh-160px)]' : 'h-[70vh]'} bg-gradient-to-b from-orange-50 to-white backdrop-blur-md rounded-xl shadow-lg border border-orange-100`}>
+  return (
+    <div className={`flex flex-col ${isFullWidth ? 'h-[calc(100vh-160px)]' : 'h-[70vh]'} bg-gradient-to-b from-orange-50 to-white backdrop-blur-md rounded-xl shadow-lg border border-orange-100`}>
       <div className="chat-header flex-none bg-gradient-to-r from-orange-500 to-red-600 p-4 text-white flex justify-between items-start">
         <div>
           <h2 className="text-xl font-semibold">Kundali Chat Assistant</h2>
@@ -217,26 +255,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
               message.sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'
             }`}
           >
-            <div className="text-sm">{message.content}</div>
-            <div className="text-xs opacity-70 text-right mt-1">
-              {new Date(message.timestamp).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit'
-              })}
-            </div>
+            {message.isLoading ? (
+              <div className="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            ) : (
+              <>
+                <div className="text-sm">{message.content}</div>
+                <div className="text-xs opacity-70 text-right mt-1">
+                  {new Date(message.timestamp).toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                  })}
+                </div>
+              </>
+            )}
           </div>
         ))}
         
-        {isTyping && (
-          <div className="chat-bubble chat-bubble-ai inline-flex items-center">
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            <span>Analyzing your Kundali...</span>
-          </div>
-        )}
-        
         <div ref={messagesEndRef} />
       </div>
-        <div className="mt-2 px-2 sm:px-4">
+      
+      <div className="mt-2 px-2 sm:px-4">
         {hasKundaliData && (
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 sm:gap-2 mb-2 justify-center">
             {sampleQuestions[language].map((question, index) => (
@@ -267,7 +309,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
               <TooltipTrigger asChild>
                 <Button 
                   type="submit" 
-                  disabled={isTyping || !inputMessage.trim()}
+                  disabled={!inputMessage.trim()}
                   className="bg-orange-600 hover:bg-orange-700"
                 >
                   <SendIcon size={18} />
