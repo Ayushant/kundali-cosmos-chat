@@ -171,8 +171,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isFullWidth = false, kund
       const data = await response.json();
       console.log('Webhook response:', data);
       
-      // Extract AI response from webhook
-      const aiResponse = data.output || data.message || data || "No response received";
+      // Extract AI response from webhook - fix the issue here
+      const aiResponse = data.response || data.message || "No response received";
       
       // Remove loading message and add AI response
       setMessages(prev => {
